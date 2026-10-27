@@ -311,7 +311,7 @@ body.shopen{overflow:hidden}
 .sh-line svg{flex:1;width:100%;min-height:0}
 .sh-line .cap2{font-size:11.5px;color:var(--mute);margin-top:6px;line-height:1.4}
 .sh-load{position:absolute;inset:0;display:grid;place-items:center;color:var(--mute);font-size:13px;pointer-events:none}
-.still *{animation:none!important;transition:none!important}.still .card{opacity:1;transform:none}.still .row.fresh .tx{animation:none}.still .draw{stroke-dashoffset:0}.still .toast{display:none}
+.still *{animation:none!important;transition:none!important}.still .card{opacity:1;transform:none}.still .row.fresh .tx{animation:none}.still .draw{stroke-dashoffset:0}.still .toast{display:none}.still .stamp{opacity:1;transform:translate(-50%,-50%) rotate(-14deg)}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important;transition-duration:.01s!important}}
 
 /* ===================== v7: pages + sidebar layout ===================== */
@@ -478,6 +478,71 @@ a.pipb span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical
 #pg-overview .card .cf span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 #pg-overview .card .cf{gap:4px}
 #pg-overview .spark{max-height:110px}
+
+/* ---- v9: swipe deck + position bubbles ---- */
+#coinsp{display:flex;flex-direction:column;min-height:0}
+.cbar{display:flex;align-items:center;gap:8px;flex:none;margin-bottom:10px}
+.cbar .cfil{flex:1;margin:0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;min-width:0}
+.cbar .cfil::-webkit-scrollbar{display:none}
+.cbar .cfil button{flex:none}
+.cmode{flex:none;width:36px;height:32px;border:0;border-radius:12px;background:var(--card);color:var(--mute);display:grid;place-items:center;cursor:pointer;padding:0}
+.cmode svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.deck{flex:1;min-height:0;display:flex;flex-direction:column}
+.dstage{flex:1;min-height:0;display:flex;max-height:620px;position:relative}
+.dc{--vc:var(--blue);flex:1;min-width:0;position:relative;display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:26px;background:linear-gradient(180deg,var(--card2),var(--card));box-shadow:0 14px 36px rgba(0,0,0,.38),0 0 0 1px rgba(255,255,255,.05);overflow:hidden;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:pan-y;will-change:transform}
+.dc.BUY{--vc:var(--green)}.dc.WATCH{--vc:#ffb347}.dc.SKIP{--vc:var(--red)}
+.dc.inR{animation:inR .26s cubic-bezier(.2,.8,.25,1)}.dc.inL{animation:inL .26s cubic-bezier(.2,.8,.25,1)}
+@keyframes inR{from{transform:translateX(70%) rotate(4deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes inL{from{transform:translateX(-70%) rotate(-4deg);opacity:0}to{transform:none;opacity:1}}
+.dc-top{display:flex;align-items:center;gap:12px;flex:none}
+.dimg{position:relative;width:60px;height:60px;border-radius:50%;overflow:hidden;flex:none;display:grid;place-items:center}
+.dimg .av{width:60px;height:60px;font-size:24px}
+.dimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
+.dc .nm{flex:1;min-width:0}
+.dc .nm b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dc .nm small{display:block;font-size:13px;color:var(--mute);font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dc .sc{width:58px;height:58px;flex:none}.dc .sc span{font-size:17px}
+.dc-pills{display:flex;gap:6px;flex-wrap:wrap;flex:none}
+.dc-pills span{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--mute)}
+.dc .pipb{margin:0;padding:12px 14px;font-size:14.5px;flex:none;border-radius:16px}
+.dc .pipb svg{width:26px;height:26px}
+.dc .pipb span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.dc-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:none}
+.dc-stats div{background:rgba(255,255,255,.045);border-radius:16px;padding:13px 14px;min-width:0}
+.dc-stats small{display:block;font-size:11px;font-weight:700;color:var(--mute);letter-spacing:.05em;text-transform:uppercase}
+.dc-stats b{display:block;font-size:23px;font-weight:800;letter-spacing:-.02em;margin-top:3px;white-space:nowrap}
+.dc-stats b.na{color:var(--dim)}
+.dc-tags{display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start;flex:1;min-height:0;overflow:hidden}
+.dc-tags span{font-size:12.5px;font-weight:700;padding:5px 10px;border-radius:999px;white-space:nowrap}
+.dc-tags .g{background:rgba(48,209,88,.14);color:var(--green)}
+.dc-tags .b{background:rgba(255,69,58,.15);color:var(--red)}
+.dc-tags .n{color:var(--dim);font-weight:600;padding-left:0}
+.dc-act{flex:none;border-radius:16px;padding:13px 14px;font-size:15px;font-weight:800;letter-spacing:-.01em;line-height:1.25;color:var(--vc);background:color-mix(in srgb,var(--vc) 14%,transparent);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.stamp{position:absolute;left:50%;top:44%;z-index:3;pointer-events:none;font-weight:900;font-size:52px;letter-spacing:.06em;line-height:1;padding:6px 20px;border:5px solid var(--vc);color:var(--vc);border-radius:14px;background:color-mix(in srgb,var(--bg) 55%,transparent);opacity:0;transform:translate(-50%,-50%) rotate(-14deg);animation:stamp 1.9s ease-out .12s both}
+@keyframes stamp{0%{opacity:0;transform:translate(-50%,-50%) rotate(-14deg) scale(2.6)}14%{opacity:1;transform:translate(-50%,-50%) rotate(-14deg) scale(.94)}20%{transform:translate(-50%,-50%) rotate(-14deg) scale(1)}72%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(-14deg) scale(1)}}
+.dnav{flex:none;display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+.dnav button{width:48px;height:48px;border-radius:50%;border:0;background:var(--card);color:var(--text);display:grid;place-items:center;cursor:pointer;padding:0}
+.dnav button:disabled{opacity:.3;cursor:default}
+.dnav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.dcnt{text-align:center;font-size:16px;font-weight:800;letter-spacing:-.01em}
+.dcnt small{display:block;font-size:11px;font-weight:600;color:var(--dim);margin-top:2px;letter-spacing:0}
+.clist{flex:1;min-height:0;overflow-y:auto}
+@media (prefers-reduced-motion:reduce){.stamp{animation-duration:.01s;animation-delay:0s}.dc.inR,.dc.inL{animation:none}}
+/* bubbles */
+.bubs{display:flex;align-items:center;gap:10px;flex:none;min-height:62px}
+.bubs .bl{flex:none;font-size:12px;font-weight:700;color:var(--mute);line-height:1.25;white-space:nowrap}
+.bubs .bl b{display:block;font-size:20px;color:var(--text);font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.bubs .bs{flex:1;min-width:0;display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding:4px 4px 12px}
+.bubs .bs::-webkit-scrollbar{display:none}
+.bb{flex:none;position:relative;width:46px;height:46px;border:0;padding:0;background:none;cursor:pointer;color:var(--text);font:inherit}
+.bb .bav{display:block;width:46px;height:46px;border-radius:50%;overflow:hidden;position:relative;box-shadow:0 0 0 2px var(--bc,var(--line))}
+.bb .bav .av{width:46px;height:46px;font-size:18px}
+.bb .bav img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
+.bb.pos{--bc:var(--green)}.bb.neg{--bc:var(--red)}
+.bb i{position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);font-style:normal;font-size:11px;font-weight:800;line-height:1;padding:3px 6px;border-radius:999px;white-space:nowrap;background:var(--card2);color:var(--mute);box-shadow:0 0 0 2px var(--bg)}
+.bb.pos i{background:var(--green);color:#04210d}.bb.neg i{background:var(--red);color:#fff}
+.bubs .bnone{font-size:12.5px;color:var(--dim)}
+#pg-overview .sum{grid-template-columns:1fr 1fr}
 </style>
 </head>
 <body>
@@ -662,7 +727,20 @@ function buildOpen(d){
   paintLive();
 }
 function calc(p,L){var r=L.px/p.entry-1;return {r:r,usd:p.size*(p.remaining==null?1:p.remaining)*r}}
+function paintBubbles(){
+  var el=$("#bubs");if(!el||!D)return;
+  var o=openList(),cap=D.open_cap||CAP_DEFAULT;
+  if(!o.length){el.innerHTML='<div class="bl"><b>0</b>open</div><span class="bnone">no open positions · Pip is watching</span>';return}
+  var old=el.querySelector(".bs"),sl=old?old.scrollLeft:0;
+  el.innerHTML='<div class="bl"><b>'+o.length+'</b>open · max '+cap+'</div><div class="bs">'+o.map(function(p){
+    var L=LIVE[p.pair],ok=L&&L.ok,r=ok?calc(p,L).r*100:null,cl=r==null?"":r>0.05?"pos":r<-0.05?"neg":"";
+    var tx=r==null?"…":(r>0?"+":"")+r.toFixed(Math.abs(r)<10?1:0)+"%";
+    var im=L&&L.img?'<img src="'+esc(String(L.img).replace(/width=\d+&height=\d+/,"width=96&height=96"))+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':"";
+    return '<button class="bb '+cl+'" data-bpair="'+esc(p.pair)+'" aria-label="'+esc(p.coin)+' '+tx+'"><span class="bav">'+avatar(p.coin,46)+im+'</span><i>'+tx+'</i></button>'}).join("")+'</div>';
+  var nb=el.querySelector(".bs");if(nb&&sl)nb.scrollLeft=sl;
+}
 function paintLive(){
+  paintBubbles();
   var o=openList(),sumPnl=0,priced=0;
   o.forEach(function(p){
     var L=LIVE[p.pair],row=document.querySelector('.tr[data-pair="'+p.pair+'"]');
@@ -718,7 +796,7 @@ function fetchLive(){
           var m={};(j&&j.pairs||[]).forEach(function(x){if(x&&x.pairAddress)m[String(x.pairAddress).toLowerCase()]=x});
           list.forEach(function(p){
             var x=m[String(p.pair).toLowerCase()],v=x?parseFloat(x.priceUsd):NaN;
-            if(isFinite(v)&&v>0){LIVE[p.pair]={px:v,t:Date.now(),ok:true,liq:x.liquidity&&x.liquidity.usd};LAST.good=Date.now();recPoint(p.pair,v)}
+            if(isFinite(v)&&v>0){LIVE[p.pair]={px:v,t:Date.now(),ok:true,liq:x.liquidity&&x.liquidity.usd,img:(x.info&&x.info.imageUrl)||(LIVE[p.pair]&&LIVE[p.pair].img)||null};LAST.good=Date.now();recPoint(p.pair,v)}
             else{LIVE[p.pair]=Object.assign({},LIVE[p.pair]||{},{ok:false})}
           });
         }).catch(function(e){
@@ -856,7 +934,8 @@ function initSheet(){
   $("#shtabs").addEventListener("click",function(e){var b=e.target.closest("button[data-m]");if(!b)return;SH.mode=b.getAttribute("data-m");SH.auto=false;paintSheet(true)});
   document.addEventListener("click",function(e){
     if(e.target.closest("a"))return;
-    var cc=e.target.closest("#coinsp .cc");if(cc){openSheet("coin",cc.getAttribute("data-ck"));return}
+    var bb=e.target.closest(".bb");if(bb){openSheet("open",bb.getAttribute("data-bpair"));return}
+    var cc=e.target.closest("#coinsp .cc, #coinsp .dc");if(cc){if(MOVED){MOVED=false;return}openSheet("coin",cc.getAttribute("data-ck"));return}
     var tr=e.target.closest("#openp .tr, #histp .tr");if(!tr)return;
     if(tr.hasAttribute("data-pair"))openSheet("open",tr.getAttribute("data-pair"));
     else if(tr.hasAttribute("data-hk"))openSheet("hist",tr.getAttribute("data-hk"));
@@ -881,15 +960,81 @@ function coinCard(c){
    +'<div class="sc" style="--p:'+(c.score==null?0:c.score*10)+';--sc:'+scCol(c.score)+'"><span>'+scTxt(c.score)+'</span></div></div>'
    +'<div class="pipb">'+PIPMINI+'<span>'+esc(c.pip||"")+'</span></div></div>';
 }
+var CK=null,STAMPED=null,MOVED=false,DRG=null,CMODE=(function(){try{return localStorage.getItem("pd_cmode")==="list"?"list":"deck"}catch(e){return"deck"}})();
+function kfmt(n,cur){if(n==null||!isFinite(n))return null;var a=Math.abs(n),p=cur?"$":"";return a>=1e9?p+(n/1e9).toFixed(2)+"B":a>=1e6?p+(n/1e6).toFixed(2)+"M":a>=1e3?p+(n/1e3).toFixed(1)+"K":p+Math.round(n)}
+function ageTxt(m){if(m==null)return"age —";if(m<60)return Math.round(m)+"m old";if(m<1440)return Math.floor(m/60)+"h "+Math.round(m%60)+"m old";return Math.floor(m/1440)+"d "+Math.floor(m%1440/60)+"h old"}
+function stat(l,v){return '<div><small>'+l+'</small><b'+(v==null?' class="na"':'')+'>'+(v==null?"—":v)+'</b></div>'}
+var STAMPTX={BUY:"APE",WATCH:"WATCH",SKIP:"PASS"};
+function deckCard(c,play,dir){
+  var vl=c.verdict||"SKIP",nm=c.name||c.coin,mc=c.mcap!=null?["Market cap",kfmt(c.mcap,1)]:c.fdv!=null?["FDV",kfmt(c.fdv,1)]:["Market cap",null];
+  var im=c.image?'<img src="'+esc(String(c.image).replace(/width=\d+&height=\d+/,"width=128&height=128"))+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':"";
+  var tg=(c.tags||[]).map(function(t){return '<span class="'+(t.good?"g":"b")+'">'+esc(t.t)+'</span>'}).join("")||'<span class="n">no gate details were saved for this older check</span>';
+  return '<div class="dc '+esc(vl)+(dir?' in'+dir:'')+'" data-ck="'+esc(c.link)+'">'
+   +'<div class="dc-top"><span class="dimg">'+avatar(c.coin,60)+im+'</span><div class="nm"><b>'+esc(short(nm))+'</b><small>$'+esc(short(c.coin))+' · vetted '+esc(fmtT(c.ts))+'</small></div>'
+   +'<div class="sc" style="--p:'+(c.score==null?0:c.score*10)+';--sc:'+scCol(c.score)+'"><span>'+scTxt(c.score)+'</span></div></div>'
+   +'<div class="dc-pills"><span>'+esc(ageTxt(c.age_min))+'</span><span>'+esc(c.chain||"—")+'</span></div>'
+   +'<div class="pipb">'+PIPMINI+'<span>'+esc(c.pip||"")+'</span></div>'
+   +'<div class="dc-stats">'+stat("Liquidity",kfmt(c.liq,1))+stat("Holders",c.holders==null?null:Math.round(c.holders).toLocaleString("en-US"))+stat(mc[0],mc[1])+stat("24h volume",kfmt(c.vol24,1))+'</div>'
+   +'<div class="dc-tags">'+tg+'</div>'
+   +'<div class="dc-act">'+esc(c.decision||vl)+'</div>'
+   +(play?'<div class="stamp">'+STAMPTX[vl]+'</div>':'')+'</div>';
+}
+function coinList(){return ((D&&D.vetted_coins)||[]).filter(function(c){return CF==="all"||c.verdict===CF})}
+function deckIdx(l){var i=-1;l.forEach(function(c,k){if(c.link===CK)i=k});if(i<0){i=0;CK=l[0]?l[0].link:null}return i}
+function renderDeck(dir,force){
+  var st=$("#dstage");if(!st)return;
+  var l=coinList(),i=deckIdx(l),c=l[i];
+  if(!c){st.innerHTML='<div class="empty" style="margin:auto">'+(((D&&D.vetted_coins)||[]).length?'No coins with this verdict yet.':'Pip has not vetted a coin yet. Every coin the desk checks shows up here with a score, a verdict and the reason.')+'</div>';STAMPED=null}
+  else{var play=force||STAMPED!==c.link;STAMPED=c.link;st.innerHTML=deckCard(c,play,dir)}
+  var ct=$("#dcnt");if(ct)ct.innerHTML=(c?(i+1)+' / '+l.length:'0 / 0')+'<small>swipe or use the arrows · tap for the chart</small>';
+  var nb=$("#dnewer"),ob=$("#dolder");if(nb)nb.disabled=i<=0;if(ob)ob.disabled=!c||i>=l.length-1;
+}
+function deckGo(delta){
+  var l=coinList(),i=deckIdx(l),ni=i+delta,el=document.querySelector("#dstage .dc");
+  if(ni<0||ni>=l.length){if(el){el.style.transition="transform .18s";el.style.transform="translateX("+(delta>0?-14:14)+"px)";setTimeout(function(){el.style.transform=""},160)}return}
+  var go=function(){CK=l[ni].link;renderDeck(delta>0?"R":"L",true)};
+  if(el&&!(window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)){el.style.transition="transform .17s ease-in,opacity .17s";el.style.transform="translateX("+(delta>0?"-":"")+"115%) rotate("+(delta>0?-6:6)+"deg)";el.style.opacity="0";setTimeout(go,150)}else go();
+}
 function buildCoins(d){
   var all=d.vetted_coins||[],n=d.vetted_counts||{BUY:0,WATCH:0,SKIP:0},el=$("#coinsp");if(!el)return;
-  var list=all.filter(function(c){return CF==="all"||c.verdict===CF}),shown=list.slice(0,CLIM);
   var fl=[["all","All",all.length],["BUY","Buy",n.BUY||0],["WATCH","Watch",n.WATCH||0],["SKIP","Skip",n.SKIP||0]].map(function(f){return '<button data-f="'+f[0]+'"'+(CF===f[0]?' class="on"':'')+'>'+f[1]+' '+f[2]+'</button>'}).join("");
-  var keep=el.querySelector(".cgrid"),st=keep?keep.scrollTop:0;
-  el.innerHTML='<div class="ph"><span>score 0–10 · tap a card for the chart</span></div><div class="cfil" id="cfil">'+fl+'</div>'
-   +'<div class="cgrid">'+(shown.length?shown.map(coinCard).join("")+(list.length>shown.length?'<button class="more" data-more="coins">Show more ('+(list.length-shown.length)+')</button>':''):'<div class="empty">'+(all.length?'No coins with this verdict yet.':'Pip has not vetted a coin yet. Every coin the desk checks shows up here with a score, a verdict and the reason.')+'</div>')+'</div>';
-  var g=el.querySelector(".cgrid");if(g&&st)g.scrollTop=st;
-  var cf=$("#cfil");if(cf)cf.addEventListener("click",function(e){var b=e.target.closest("button[data-f]");if(!b)return;CF=b.getAttribute("data-f");CLIM=8;buildCoins(D)});
+  var ico=CMODE==="deck"?'<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>':'<svg viewBox="0 0 24 24"><rect x="6" y="3.5" width="12" height="17" rx="3"/></svg>';
+  var bar='<div class="cbar"><div class="cfil" id="cfil">'+fl+'</div><button class="cmode" id="cmode" aria-label="'+(CMODE==="deck"?"Show as list":"Show as cards")+'">'+ico+'</button></div>';
+  if(CMODE==="deck"){
+    var had=$("#dstage");
+    if(had){var cf0=$("#cfil");if(cf0)cf0.innerHTML=fl;renderDeck(null,false);return}
+    el.innerHTML=bar+'<div class="deck"><div class="dstage" id="dstage"></div><div class="dnav"><button id="dnewer" aria-label="Newer coin"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><div class="dcnt" id="dcnt"></div><button id="dolder" aria-label="Older coin"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div></div>';
+    renderDeck(null,false);
+  }else{
+    var list=all.filter(function(c){return CF==="all"||c.verdict===CF}),shown=list.slice(0,CLIM);
+    var keep=el.querySelector(".clist"),st=keep?keep.scrollTop:0;
+    el.innerHTML=bar+'<div class="cgrid clist">'+(shown.length?shown.map(coinCard).join("")+(list.length>shown.length?'<button class="more" data-more="coins">Show more ('+(list.length-shown.length)+')</button>':''):'<div class="empty">'+(all.length?'No coins with this verdict yet.':'Pip has not vetted a coin yet. Every coin the desk checks shows up here with a score, a verdict and the reason.')+'</div>')+'</div>';
+    var g=el.querySelector(".clist");if(g&&st)g.scrollTop=st;
+  }
+}
+function initDeck(){
+  var el=$("#coinsp");if(!el)return;
+  el.addEventListener("click",function(e){
+    var f=e.target.closest("button[data-f]");if(f){CF=f.getAttribute("data-f");CLIM=8;CK=null;var c0=$("#dstage");if(c0){document.querySelectorAll("#cfil button").forEach(function(b){b.classList.toggle("on",b===f)});renderDeck(null,true)}else buildCoins(D);return}
+    if(e.target.closest("#cmode")){CMODE=CMODE==="deck"?"list":"deck";try{localStorage.setItem("pd_cmode",CMODE)}catch(x){}el.innerHTML="";buildCoins(D);return}
+    if(e.target.closest("#dnewer")){deckGo(-1);return}
+    if(e.target.closest("#dolder")){deckGo(1);return}
+  });
+  el.addEventListener("pointerdown",function(e){var c=e.target.closest(".dc");if(!c||(e.pointerType==="mouse"&&e.button))return;DRG={x:e.clientX,y:e.clientY,el:c,dx:0,id:e.pointerId};MOVED=false});
+  el.addEventListener("pointermove",function(e){
+    if(!DRG||e.pointerId!==DRG.id)return;var dx=e.clientX-DRG.x,dy=e.clientY-DRG.y;
+    if(!MOVED&&(Math.abs(dx)<9||Math.abs(dx)<Math.abs(dy)))return;
+    if(!MOVED){MOVED=true;try{DRG.el.setPointerCapture(e.pointerId)}catch(x){}}
+    DRG.dx=dx;DRG.el.style.transition="none";DRG.el.style.transform="translateX("+dx+"px) rotate("+(dx/24)+"deg)";
+  });
+  var end=function(e){
+    if(!DRG||e.pointerId!==DRG.id)return;var d=DRG;DRG=null;
+    if(!MOVED)return;
+    if(Math.abs(d.dx)>70){var l=coinList(),i=deckIdx(l),ni=i+(d.dx<0?1:-1);if(ni>=0&&ni<l.length){d.el.style.transition="transform .17s ease-in,opacity .17s";d.el.style.transform="translateX("+(d.dx<0?"-":"")+"115%) rotate("+(d.dx<0?-6:6)+"deg)";d.el.style.opacity="0";setTimeout(function(){CK=l[ni].link;renderDeck(d.dx<0?"R":"L",true)},150);setTimeout(function(){MOVED=false},400);return}}
+    d.el.style.transition="transform .2s cubic-bezier(.2,.8,.25,1)";d.el.style.transform="";setTimeout(function(){MOVED=false},60);
+  };
+  el.addEventListener("pointerup",end);el.addEventListener("pointercancel",end);
+  document.addEventListener("keydown",function(e){if(VIEW!=="coins"||CMODE!=="deck"||document.querySelector(".sheet.open"))return;if(e.key==="ArrowLeft")deckGo(-1);else if(e.key==="ArrowRight")deckGo(1)});
 }
 function findCoin(link){return ((D&&D.vetted_coins)||[]).filter(function(c){return c.link===link})[0]}
 function paintCoin(build){
@@ -990,6 +1135,7 @@ function route(){
   var m=PG[PIDS.indexOf(p)];$("#ptitle").textContent=m[1];$("#psub").textContent=m[2];
   document.title=m[1]+" · Paper Desk";setNav(false);
   var pg=$("#pg-"+p);if(pg)pg.scrollTop=0;
+  if(p==="coins"&&D&&CMODE==="deck"&&$("#dstage")){STAMPED=null;renderDeck(null,true)}
 }
 function setView(v){location.hash="#"+v}
 function shell(){
@@ -1001,7 +1147,7 @@ function shell(){
   +'<main class="main"><header class="top"><button class="menu" id="menu" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button><div><h1 id="ptitle"></h1><div class="sub" id="psub"></div></div><div class="sp"></div><span class="pchip">PRACTICE</span></header>'
   +'<div class="pages">'
   +'<section class="pg" id="pg-overview"><div class="eqrow"><div class="eqleft"><div class="eq-top" id="eqtop"></div><div class="odo" id="odo"></div><div id="eqsub"></div></div><div class="mascot" id="mascot" title="Pip, the paper-trading pumpkin"></div></div>'
-   +'<div class="livebar" id="livebar"></div><div class="spark" id="spark"></div><div class="sum" id="sum"></div><a class="pipb" id="pipsay" href="#coins"></a><div class="panel goal" id="goalp"></div><div class="grid" id="grid"></div><details class="rules panel"><summary>Rules &amp; notes ▾</summary><div class="foot" id="foot"></div></details></section>'
+   +'<div class="livebar" id="livebar"></div><div class="bubs" id="bubs"></div><div class="spark" id="spark"></div><div class="sum" id="sum"></div><a class="pipb" id="pipsay" href="#coins"></a><div class="panel goal" id="goalp"></div><div class="grid" id="grid"></div><details class="rules panel"><summary>Rules &amp; notes ▾</summary><div class="foot" id="foot"></div></details></section>'
   +'<section class="pg" id="pg-positions"><div class="panel fill" id="openp"></div></section>'
   +'<section class="pg" id="pg-activity"><div class="panel fill"><div class="ph"><span><i class="ld scandot"></i>last scan <b class="scanago">…</b></span></div><div class="feed" id="feed"></div><button class="more" id="feedmore" data-more="feed"></button></div></section>'
   +'<section class="pg" id="pg-history"><div class="panel fill" id="histp"></div></section>'
@@ -1020,7 +1166,7 @@ function shell(){
     feedMore()});
   window.addEventListener("hashchange",route);route();
   odo=new Odo($("#odo"));
-  var mc=$("#mascot");mc.innerHTML=MASCOT_SVG;mc.addEventListener("click",function(){react((D&&D.loss_streak>=2)?"ouch":"cheer")});initSheet();
+  var mc=$("#mascot");mc.innerHTML=MASCOT_SVG;mc.addEventListener("click",function(){react((D&&D.loss_streak>=2)?"ouch":"cheer")});initSheet();initDeck();
 }
 function feedMore(){
   var f=$("#feed"),b=$("#feedmore");if(!f||!b)return;var n=f.querySelectorAll(".row").length,all=f.classList.contains("all");
@@ -1028,13 +1174,12 @@ function feedMore(){
 }
 function buildSum(d){
   var cap=d.open_cap||CAP_DEFAULT,dp=d.daily_pnl||0;
-  $("#sum").innerHTML='<div><small>Open</small><b>'+d.open_count+' / '+cap+'</b></div>'
-   +'<div><small>Today</small><b class="'+(dp>0?"pos":dp<0?"neg":"zero")+'">'+sgn(dp)+'</b></div>'
+  $("#sum").innerHTML='<div><small>Today</small><b class="'+(dp>0?"pos":dp<0?"neg":"zero")+'">'+sgn(dp)+'</b></div>'
    +'<div><small>Record</small><b>'+d.wins+'W · '+d.losses+'L</b></div>';
   var vc=(d.vetted_coins||[])[0];
   $("#pipsay").innerHTML=PIPMINI+'<span><b>Pip:</b> '+esc(vc?vc.pip:"watching the market, nothing vetted yet.")+'</span>';
   function bd(id,v){var e=$("#bd-"+id);if(e)e.textContent=v?String(v):""}
-  bd("positions",d.open_count);bd("coins",d.vetted_total);bd("history",(d.closed_trades||[]).length);
+  bd("positions",d.open_count);paintBubbles();bd("coins",d.vetted_total);bd("history",(d.closed_trades||[]).length);
 }
 function show(d){
   var sig=JSON.stringify(d);
