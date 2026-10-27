@@ -255,6 +255,32 @@ a.lk{color:var(--blue);font-size:12px;font-weight:700;text-decoration:none;white
 .card .viz.sm2{height:26px;margin:4px 0 2px}
 .rtag{font-size:9.5px;font-weight:800;letter-spacing:.06em;padding:2px 6px;border-radius:6px;border:1px solid currentColor;line-height:1.2;white-space:nowrap}
 .tr{cursor:pointer}.tr:active{background:rgba(255,255,255,.03)}
+/* ---------- Coins view (Pip's vetting cards) ---------- */
+.tabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
+.tabs button{flex:1;font:inherit;font-size:14px;font-weight:800;letter-spacing:-.01em;padding:9px 0;border-radius:999px;border:0;background:transparent;color:var(--mute);cursor:pointer}
+.tabs button.on{background:var(--pill);color:var(--pill-text)}
+.tabs button em{font-style:normal;font-weight:700;opacity:.65;margin-left:4px}
+.app[data-view=coins]>.dv{display:none}.app[data-view=desk]>.cv{display:none}
+.cfil{display:flex;gap:6px;margin:0 0 10px;flex-wrap:wrap}
+.cfil button{font:inherit;font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--mute);cursor:pointer}
+.cfil button.on{background:var(--text);color:var(--bg)}
+.cgrid{display:flex;flex-direction:column;gap:10px}
+.cc{position:relative;border:1px solid var(--line);border-left:3px solid var(--vc);border-radius:18px;padding:12px 12px 10px;background:linear-gradient(180deg,var(--card2),var(--card));cursor:pointer;animation:slide .45s cubic-bezier(.2,.9,.2,1)}
+.cc:active{background:rgba(255,255,255,.03)}
+.cc.BUY{--vc:var(--green)}.cc.WATCH{--vc:var(--blue)}.cc.SKIP{--vc:var(--red)}
+.cc .top{display:flex;align-items:center;gap:10px}
+.cc .nm{flex:1;min-width:0}
+.cc .nm b{display:block;font-size:16px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc .nm small{display:block;font-size:11.5px;color:var(--dim);font-family:ui-monospace,"SF Mono",Menlo,monospace;margin-top:1px}
+.sc{--p:0;--sc:var(--red);width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13.5px;font-weight:800;position:relative;background:conic-gradient(var(--sc) calc(var(--p)*1%),var(--track) 0)}
+.sc:before{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--card)}
+.sc span{position:relative}
+.pipb{display:flex;gap:8px;align-items:flex-start;margin-top:9px;padding:8px 10px;border-radius:14px;background:rgba(255,159,10,.10);border:1px solid rgba(255,159,10,.24);font-size:13.5px;line-height:1.35;font-weight:500}
+.pipb svg{width:22px;height:22px;flex:none;margin-top:1px}
+.pipb span{min-width:0;word-break:break-word}
+.cc .cf2{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:12px;color:var(--mute);font-weight:500}
+.cc .cf2 a{color:var(--blue);font-weight:800;text-decoration:none}
+body.light .pipb{background:rgba(255,159,10,.12)}
 /* chart sheet */
 body.shopen{overflow:hidden}
 .sheet{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;align-items:center;transform:translateY(102%);visibility:hidden;transition:transform .34s cubic-bezier(.2,.8,.2,1),visibility 0s .34s}
@@ -305,7 +331,7 @@ var $=function(s){return document.querySelector(s)};
 var qs=new URLSearchParams(location.search);var STILL=qs.get('still')==='1';if(STILL)document.documentElement.classList.add('still');
 if(qs.get("theme")==="light")document.body.classList.add("light");
 var COLORS={Sniper:"#ff9f0a",Momentum:"#7ed957","Dip Hunter":"#ff5fa2",Vetter:"#2f7bff",Spy:"#a65cf0","Risk Manager":"#29b6c9"};
-var RNAME={SNIPER:"Sniper",MOMENTUM:"Momentum",DIP_HUNTER:"Dip Hunter"},CAP_DEFAULT=15;
+var RNAME={SNIPER:"Sniper",MOMENTUM:"Momentum",DIP_HUNTER:"Dip Hunter"},CAP_DEFAULT=5;
 function rname(p){return RNAME[p&&p.role]||"Sniper"}
 var MIL=[1.25,1.5,2,3,4,5];
 var ICON={
@@ -392,7 +418,7 @@ function renderTop(d){
    tcard("Dip Hunter","DIP_HUNTER","dip bounces",.29),
    card("Spy",roles.Spy,'<div class="mid"><span class="t"><b>'+d.wallets_tracked+'</b> wallets</span><span class="pill n">idle</span></div><div class="rs">scanned <b>0</b> · entries <b>0</b></div><div class="viz sm2">'+sp+'</div>',"0W · 0L",0,.36),
    card("Vetter",roles.Vetter,'<div class="mid"><span class="t">Scanned <b>'+d.scanned+'</b></span><span class="pill n">'+d.passed+' pass</span></div><div class="rs">'+d.rejected+' rejected · every role is vetted</div><div class="viz sm2">'+vv+'</div>',"gates, not trades",0,.43),
-   card("Risk Manager",roles["Risk Manager"],'<div class="mid"><span class="t"><b>'+(d.halt?"Halted":"All clear")+'</b></span><span class="pill '+(d.open_count>=cap?"g":"n")+'">'+d.open_count+'/'+cap+' open</span></div><div class="rs">global cap <b>'+cap+'</b> · sniper stops at '+(d.sniper_max_open||12)+(d.halt?' · <b>'+esc(d.halt)+'</b>':'')+'</div><div class="slots">'+slots+'</div><div class="cap"><i style="width:'+capUsed+'%"></i></div>',"cap −"+usd(d.daily_cap),d.daily_pnl,.5)
+   card("Risk Manager",roles["Risk Manager"],'<div class="mid"><span class="t"><b>'+(d.halt?"Halted":"All clear")+'</b></span><span class="pill '+(d.open_count>=cap?"g":"n")+'">'+d.open_count+'/'+cap+' open</span></div><div class="rs">global cap <b>'+cap+'</b> · sniper stops at '+(d.sniper_max_open||4)+(d.halt?' · <b>'+esc(d.halt)+'</b>':'')+'</div><div class="slots">'+slots+'</div><div class="cap"><i style="width:'+capUsed+'%"></i></div>',"cap −"+usd(d.daily_cap),d.daily_pnl,.5)
   ];
   function card(name,r,body,rec,pnl,dl){
     var c=COLORS[name];
@@ -428,7 +454,7 @@ function renderTop(d){
   $("#spark").innerHTML=chart;
   $("#grid").innerHTML=cards.join("");
   $("#goalp").innerHTML='<div class="gt"><h2>Goal: '+goalMult+'×</h2>'+gtxt+'</div><div class="gb"><div class="gtrack"></div><div class="gfill" id="gfill"></div><div class="gpill'+(fill<8?" l":"")+'" id="gpill" style="left:0">'+mult.toFixed(2)+'×</div>'+ms+'</div>';
-  $("#foot").innerHTML='Simulated at real DexScreener prices. Sniper: stop −25% until +50% peak, armed at +50%, half at +100%, bag exits at +200% / trails −15%. Momentum: stop −20% or −15% trail, ladder once armed. Dip Hunter: TP +20% or half the drop, stop −15%. Global cap 15 open. Book equity values open positions at cost and changes only when a trade closes; &ldquo;live (unrealised)&rdquo; adds open P&amp;L from DexScreener prices fetched in your browser.<br>Data <b>'+esc(d.generated||"")+'</b> Athens time · reloads <b>data.json</b> every 30 s';
+  $("#foot").innerHTML='Simulated at real DexScreener prices. Sniper: stop −25% until +50% peak, armed at +50%, half at +100%, bag exits at +200% / trails −15%. Momentum: stop −20% or −15% trail, ladder once armed. Dip Hunter: TP +20% or half the drop, stop −15%. Global cap 5 open. Entry gates: dev wallet, bundle, known-ruggers, top-10 ≤ 25%. Book equity values open positions at cost and changes only when a trade closes; &ldquo;live (unrealised)&rdquo; adds open P&amp;L from DexScreener prices fetched in your browser.<br>Data <b>'+esc(d.generated||"")+'</b> Athens time · reloads <b>data.json</b> every 30 s';
   odo.set(usd(d.equity),first);
   var go=function(){
     document.querySelectorAll(".ring .fg").forEach(function(c){c.setAttribute("stroke-dasharray",c.getAttribute("data-dash"))});
@@ -615,6 +641,8 @@ function lineChart(pts,entry,kind){
 }
 function paintSheet(build){
   var box=$("#sheet");if(!box)return;
+  if(SH.kind==="coin"){paintCoin(build);return}
+  $("#shtabs").querySelectorAll("button").forEach(function(b){b.style.display=""});
   var isO=SH.kind==="open",o=isO?findOpen(SH.key):null,h=isO?null:findHist(SH.key),x=o||h;
   if(!x){if(build)closeSheet();else $("#shlad").innerHTML='<div class="chips"><span class="chip n">position closed or no longer in data</span></div>';return}
   var L=o?LIVE[o.pair]:null,ok=!!(L&&L.ok),g=ok?L.px/o.entry-1:null,rem=o&&o.remaining!=null?o.remaining:1;
@@ -664,6 +692,7 @@ function initSheet(){
   $("#shtabs").addEventListener("click",function(e){var b=e.target.closest("button[data-m]");if(!b)return;SH.mode=b.getAttribute("data-m");SH.auto=false;paintSheet(true)});
   document.addEventListener("click",function(e){
     if(e.target.closest("a"))return;
+    var cc=e.target.closest("#coinsp .cc");if(cc){openSheet("coin",cc.getAttribute("data-ck"));return}
     var tr=e.target.closest("#openp .tr, #histp .tr");if(!tr)return;
     if(tr.hasAttribute("data-pair"))openSheet("open",tr.getAttribute("data-pair"));
     else if(tr.hasAttribute("data-hk"))openSheet("hist",tr.getAttribute("data-hk"));
@@ -674,6 +703,54 @@ function initSheet(){
   top.addEventListener("pointermove",function(e){if(y0==null)return;dy=Math.max(0,e.clientY-y0);sh.style.transform="translateY("+dy+"px)"});
   var end=function(){if(y0==null)return;y0=null;sh.classList.remove("drag");if(dy>90)closeSheet();else sh.style.transform=""};
   top.addEventListener("pointerup",end);top.addEventListener("pointercancel",end);
+}
+
+/* ---------- Coins view: every vetted coin as a card (vetted.csv -> data.json vetted_coins) ---------- */
+var VIEW=(qs.get("view")==="coins")?"coins":"desk",CF="all";
+var PIPMINI='<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="29" cy="54" rx="21" ry="26" fill="#d96d00"/><ellipse cx="71" cy="54" rx="21" ry="26" fill="#d96d00"/><ellipse cx="50" cy="54" rx="26" ry="29" fill="#ff9f0a"/><path d="M50 26c0-5 1-8 4-11" fill="none" stroke="#2f9e57" stroke-width="6" stroke-linecap="round"/><ellipse cx="38" cy="54" rx="4.6" ry="5.6" fill="#1a1208"/><ellipse cx="62" cy="54" rx="4.6" ry="5.6" fill="#1a1208"/><path d="M42 66q8 7 16 0" fill="none" stroke="#1a1208" stroke-width="3" stroke-linecap="round"/></svg>';
+function setView(v){
+  VIEW=v==="coins"?"coins":"desk";var a=$("#app");if(a)a.setAttribute("data-view",VIEW);
+  var t=$("#tabs");if(t)t.querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-v")===VIEW)});
+  if(VIEW==="coins")window.scrollTo(0,0);
+}
+function scTxt(v){return v==null?"–":(v%1?v.toFixed(1):String(v))}
+function scCol(v){return v==null?"var(--mute)":v>=7?"var(--green)":v>=5?"#ffb347":"var(--red)"}
+function coinCard(c){
+  var vl=c.verdict||"SKIP",chip=vl==="BUY"?'<span class="chip">BUY</span>':vl==="WATCH"?'<span class="chip b">WATCH</span>':'<span class="chip r">SKIP</span>';
+  return '<div class="cc '+esc(vl)+'" data-ck="'+esc(c.link)+'">'
+   +'<div class="top">'+avatar(c.coin,36)+'<div class="nm"><b>'+esc(short(c.coin))+'</b><small>'+esc(c.chain)+' · '+esc(fmtT(c.ts))+'</small></div>'+chip
+   +'<div class="sc" style="--p:'+(c.score==null?0:c.score*10)+';--sc:'+scCol(c.score)+'"><span>'+scTxt(c.score)+'</span></div></div>'
+   +'<div class="pipb">'+PIPMINI+'<span>'+esc(c.pip||"")+'</span></div>'
+   +'<div class="cf2"><span>tap for the chart</span><a href="'+esc(c.link)+'" target="_blank" rel="noopener">DexScreener ↗</a></div></div>';
+}
+function buildCoins(d){
+  var all=d.vetted_coins||[],n=d.vetted_counts||{BUY:0,WATCH:0,SKIP:0},el=$("#coinsp");if(!el)return;
+  var tn=$("#tabn");if(tn)tn.textContent=d.vetted_total?String(d.vetted_total):"";
+  var list=all.filter(function(c){return CF==="all"||c.verdict===CF});
+  var fl=[["all","All",all.length],["BUY","Buy",n.BUY||0],["WATCH","Watch",n.WATCH||0],["SKIP","Skip",n.SKIP||0]].map(function(f){return '<button data-f="'+f[0]+'"'+(CF===f[0]?' class="on"':'')+'>'+f[1]+' '+f[2]+'</button>'}).join("");
+  el.innerHTML='<div class="ph"><h2>Coins</h2><span>'+(d.vetted_total||0)+' vetted · '+(n.SKIP||0)+' skipped</span></div><div class="cfil" id="cfil">'+fl+'</div>'
+   +'<div class="cgrid">'+(list.length?list.map(coinCard).join(""):'<div class="empty">'+(all.length?'No coins with this verdict yet.':'Pip has not vetted a coin since this feature started. Every coin the desk checks will show up here with a score, a verdict and the reason.')+'</div>')+'</div>'
+   +'<div class="foot" style="margin-top:12px">Score 0–10 = share of the entry gates a coin passed (any failed gate caps it at 4.9). BUY = paper-bought · WATCH = passed every gate but not bought · SKIP = failed a gate. Real RugCheck / Solana data only.</div>';
+  var cf=$("#cfil");if(cf)cf.addEventListener("click",function(e){var b=e.target.closest("button[data-f]");if(!b)return;CF=b.getAttribute("data-f");buildCoins(D)});
+}
+function findCoin(link){return ((D&&D.vetted_coins)||[]).filter(function(c){return c.link===link})[0]}
+function paintCoin(build){
+  var c=findCoin(SH.key);if(!c){if(build)closeSheet();return}
+  var vl=c.verdict||"SKIP";
+  $("#shid").innerHTML=avatar(c.coin,32)+'<b>'+esc(short(c.coin))+'</b>';
+  $("#shstats").innerHTML=[["Score",'<b style="display:inline;color:'+scCol(c.score)+'">'+scTxt(c.score)+' / 10</b>'],["Verdict",vl],["Vetted",fmtT(c.ts)]].map(function(r){return '<div><small>'+r[0]+'</small><b>'+r[1]+'</b></div>'}).join("");
+  $("#shlad").innerHTML='<div class="pipb" style="margin:0 0 8px">'+PIPMINI+'<span>'+esc(c.pip||"")+'</span></div>'+(c.reasons&&c.reasons.length>1?'<div class="chips" style="flex-direction:column;align-items:flex-start;gap:3px">'+c.reasons.map(function(r){return '<span style="font-size:12.5px;color:var(--mute)">• '+esc(r)+'</span>'}).join("")+'</div>':'');
+  $("#shlink").href=c.link;
+  if(build){
+    $("#shtabs").querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-m")===SH.mode);b.style.display=(b.getAttribute("data-m")==="line")?"none":""});
+    var ch=$("#shchart");
+    if(SH.mode==="ds"){
+      ch.innerHTML='<div class="sh-load" id="shload">loading DexScreener chart…</div><iframe id="shframe" title="DexScreener chart" referrerpolicy="no-referrer" allow="clipboard-write" src="https://dexscreener.com/'+encodeURIComponent(c.chain)+'/'+encodeURIComponent(c.pair)+'?embed=1&theme=dark&trades=0&info=0"></iframe>';
+      SH.loaded=false;var fr=$("#shframe");fr.addEventListener("load",function(){SH.loaded=true;var l=$("#shload");if(l)l.remove()});
+      clearTimeout(SH.timer);SH.timer=setTimeout(function(){if(SH.open&&!SH.loaded){var l=$("#shload");if(l)l.textContent="The DexScreener embed did not load. Use “Open on DexScreener ↗”."}},9000);
+    }
+    $("#shnote").textContent="Practice vetting only: the desk does not hold this coin unless the verdict says BUY.";
+  }
 }
 
 /* ---------- Pip, the mascot (pumpkin = this bot's avatar shape) ---------- */
@@ -736,13 +813,16 @@ function tickClock(){
 /* ---------- shell + data + PWA ---------- */
 function shell(){
   $("#app").innerHTML='<div class="banner"><i></i>PRACTICE MONEY · PAPER TRADING · NO REAL FUNDS</div>'
-  +'<div class="hdr"><img src="icons/icon-192.png" alt=""><div><h1>Paper Desk</h1><div class="sub">Memecoins · 6 roles</div></div><div class="sp"></div><div class="badges"><div class="sim"><b>PAPER</b> 6 roles</div></div></div>'
+  +'<div class="hdr"><img src="icons/icon-192.png" alt=""><div><h1>Paper Desk</h1><div class="sub">Memecoins · 6 roles · 5 max open</div></div><div class="sp"></div><div class="badges"><div class="sim"><b>PAPER</b> 6 roles</div></div></div>'
+  +'<div class="tabs" id="tabs"><button data-v="desk" class="on">Desk</button><button data-v="coins">Coins<em id="tabn"></em></button></div>'
   +'<div><div class="eqrow"><div class="eqleft"><div class="eq-top" id="eqtop"></div><div class="odo" id="odo"></div><div id="eqsub"></div></div><div class="mascot" id="mascot" title="Pip, the paper-trading pumpkin"></div></div><div class="livebar" id="livebar"></div><div class="spark" id="spark"></div></div>'
-  +'<div class="grid" id="grid"></div>'
-  +'<div class="panel" id="openp"></div>'
-  +'<div class="panel"><div class="ph"><h2>Activity</h2><span class="scan"><i class="ld" id="scandot"></i>last scan <b id="scanago">…</b></span></div><div class="feed" id="feed"></div></div>'
-  +'<div class="panel" id="histp"></div>'
-  +'<div class="panel goal" id="goalp"></div><div class="foot" id="foot"></div>';
+  +'<div class="grid dv" id="grid"></div>'
+  +'<div class="panel dv" id="openp"></div>'
+  +'<div class="panel cv" id="coinsp"></div>'
+  +'<div class="panel dv"><div class="ph"><h2>Activity</h2><span class="scan"><i class="ld" id="scandot"></i>last scan <b id="scanago">…</b></span></div><div class="feed" id="feed"></div></div>'
+  +'<div class="panel dv" id="histp"></div>'
+  +'<div class="panel goal dv" id="goalp"></div><div class="foot" id="foot"></div>';
+  $("#app").setAttribute("data-view",VIEW);$("#tabs").addEventListener("click",function(e){var b=e.target.closest("button[data-v]");if(b)setView(b.getAttribute("data-v"))});setView(VIEW);
   odo=new Odo($("#odo"));
   var mc=$("#mascot");mc.innerHTML=MASCOT_SVG;mc.addEventListener("click",function(){react((D&&D.loss_streak>=2)?"ouch":"cheer")});initSheet();
 }
@@ -756,7 +836,7 @@ function show(d){
   renderTop(d);setMood(d);
   var newKey=openList().map(function(p){return p.pair}).join(",");
   if(first||oldKey!==newKey||!$("#oplist"))buildOpen(d);else paintLive();
-  buildHist(d);
+  buildHist(d);buildCoins(d);
   updateFeed(d);
   tickClock();
   if(first){document.body.classList.remove("re");first=false;document.body.classList.add("re")}
