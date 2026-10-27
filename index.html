@@ -653,14 +653,10 @@ body:not(.light) :is(.panel,.card,.livebar,.spark,.sum div,.rules,.goal,.menu,.s
 #pg-overview .rules{border-radius:999px;padding:9px 16px}
 .still .tk{animation:none}
 
-/* v18: floating menu button bottom-right, sidebar from right */
-.menu{position:fixed;right:calc(env(safe-area-inset-right,0px) + 16px);bottom:calc(var(--safe-b) + 18px);z-index:60;width:54px;height:54px;border-radius:50%;box-shadow:0 6px 22px rgba(0,0,0,.55),0 0 0 1px rgba(255,79,216,.35)}
-.menu svg{width:24px;height:24px}
-.side{left:auto;right:0;transform:translateX(105%)}
-body:not(.light) .side{box-shadow:0 0 40px rgba(0,0,0,.6),inset 1px 0 0 rgba(255,79,216,.15)}
-.app.nav .side{transform:none}
-.main{padding-bottom:calc(var(--safe-b) + 84px)}
-@media (min-width:900px){.side{transform:none}.menu{display:none}}
+/* v19: full screen, no width limits */
+.app,.main,.sh-in{max-width:none!important}
+.main{margin:0;padding-left:calc(env(safe-area-inset-left,0px) + 8px);padding-right:calc(env(safe-area-inset-right,0px) + 8px)}
+@media(min-width:900px){.main{max-width:none!important;padding-left:16px;padding-right:16px}}
 </style>
 </head>
 <body>
@@ -1183,7 +1179,7 @@ function shell(){
   +'<div class="ptag"><i></i>Practice money · no real funds</div><nav class="nav" id="nav">'+nav+'</nav>'
   +'<div class="sfoot"><div><i class="ld scandot"></i>last scan <b class="scanago">…</b></div><div>Live prices <span id="sfupd">…</span></div></div></aside>'
   +'<div class="scrim" id="scrim"></div>'
-  +'<button class="menu" id="menu" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button><main class="main"><header class="top"><div><h1 id="ptitle"></h1><div class="sub" id="psub"></div></div><div class="sp"></div><span class="pchip">PRACTICE</span></header>'
+  +'<main class="main"><header class="top"><button class="menu" id="menu" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button><div><h1 id="ptitle"></h1><div class="sub" id="psub"></div></div><div class="sp"></div><span class="pchip">PRACTICE</span></header>'
   +'<div class="pages">'
   +'<section class="pg" id="pg-overview"><div class="hero" id="hero"><div class="tkr"><div class="tklive" id="tklive"></div><div class="ticker" id="ticker"></div></div>'
    +'<div class="hrow"><div class="hl"><div class="hcap" id="eqtop"></div><div class="odo" id="odo"></div></div><div class="hr" id="hpills"></div></div>'
@@ -1265,7 +1261,7 @@ function buildLog(d){
   });
   (d.vetter_log||[]).slice(0,6).forEach(function(v){ev.push({ts:evTs(v.ts),role:"Vetter",act:v.verdict==="SKIP"?"killed":"passed",coin:"$"+v.coin.trim(),det:(v.verdict==="SKIP"?"× ":"")+v.short,bad:v.verdict==="SKIP"})});
   ev.sort(function(a,b){return b.ts-a.ts});ev=ev.slice(0,16);
-  $("#dlog").innerHTML='<div class="fh"><h3>Desk log</h3><span><i class="ld scandot"></i>scan <b class="scanago">…</b> ago</span></div><div class="lgb">'
+  $("#dlog").innerHTML='<div class="fh"><h3>Desk log</h3><span><i class="ld scandot"></i>scan <b class="scanago">…</b></span></div><div class="lgb">'
    +(ev.length?ev.map(function(e){var c=COLORS[e.role];return '<div class="lr"><i style="background:'+c+'"></i><span class="tm">'+esc(fmtT(new Date(e.ts).toISOString()))+'</span><span class="tx"><b style="color:'+c+'">'+e.role+'</b> <b>'+e.act+' '+esc(e.coin)+'</b> <span class="'+(e.bad?"bad":"zero")+'">· '+esc(e.det)+'</span></span></div>'}).join(""):'<div class="empty">No events yet.</div>')+'</div>';
 }
 function buildSkips(d){
@@ -1309,7 +1305,7 @@ else{
   document.addEventListener("visibilitychange",function(){if(!document.hidden){load();fetchLive()}});
   if("serviceWorker" in navigator&&location.protocol!=="file:"){
     /* v15: robust updates. The page knows its own version; it asks the server (no-store) for sw.js, and if the version differs it shows an "Updated, tap to reload" bar. */
-    var APP_V="paper-desk-v18",updBar=null,hadCtl=!!navigator.serviceWorker.controller,regP=navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(function(){});
+    var APP_V="paper-desk-v19",updBar=null,hadCtl=!!navigator.serviceWorker.controller,regP=navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(function(){});
     var showUpd=function(){if(updBar)return;updBar=document.createElement("button");updBar.id="upd";updBar.textContent="Updated · tap to reload";
       updBar.onclick=function(){try{caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==APP_V}).map(function(k){return caches.delete(k)}))}).then(function(){location.reload()},function(){location.reload()})}catch(e){location.reload()}};document.body.appendChild(updBar)};
     var checkUpd=function(){regP.then(function(r){if(r&&r.update)r.update().catch(function(){})});
