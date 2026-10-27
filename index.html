@@ -599,6 +599,12 @@ body:not(.light) :is(.panel,.card,.livebar,.spark,.sum div,.rules,.goal,.menu,.s
 #pg-overview .spark{margin:2px -14px 0;height:84px;padding:0;background:transparent!important;box-shadow:none!important;border-radius:0}
 #pg-overview .spark svg{filter:drop-shadow(0 0 4px var(--lc)) drop-shadow(0 0 12px var(--lc))}
 #pg-overview .spark .pulse{transform-box:fill-box}
+/* v13: bar chart under the balance */
+#pg-overview .spark{position:relative;margin-top:10px!important;height:92px!important}
+#pg-overview .spark svg.bars{filter:none}
+#pg-overview .spark .bl{background:none!important;border:0!important;box-shadow:none!important;position:absolute;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);padding:0 14px;line-height:1;pointer-events:none}
+#pg-overview .spark .tl{left:0;top:0}#pg-overview .spark .bl2{left:0;bottom:0}#pg-overview .spark .tr{right:0;top:0;font-weight:700;color:rgba(255,255,255,.55)}
+#pg-overview .spark .nobars{height:100%;display:grid;place-items:center;font-size:12px;color:rgba(255,255,255,.6)}
 .hgoal{margin:0 -14px;padding:7px 14px 9px;background:rgba(0,0,0,.34);display:flex;flex-direction:column;gap:5px}
 .gt2{font-size:12px;color:rgba(255,255,255,.82);font-weight:600}.gt2 b{color:#fff;font-weight:800}
 .gtr2{display:block;height:6px;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden}
@@ -726,21 +732,22 @@ function renderTop(d){
   var tint=dp<0?"226,34,72;150,20,90":dp>0?"20,170,90;10,90,70":"150,40,160;60,20,90";
   var hh=$("#hero");if(hh){var tt=tint.split(";");hh.style.setProperty("--h1",tt[0]);hh.style.setProperty("--h2",tt[1])}
   var closedN=d.wins+d.losses,winp=closedN?Math.round(d.wins/closedN*100):0;
-  /* chart: real equity series, full width, glowing line */
-  var ser=(d.equity_series&&d.equity_series.length?d.equity_series:[{equity:d.start},{equity:d.equity}]).map(function(s){return s.equity});
-  if(ser.length<2)ser=[d.start,ser[0]];
-  var mn=Math.min.apply(null,ser.concat([d.start])),mx=Math.max.apply(null,ser.concat([d.start]));
-  if(mx-mn<d.start*.01){mn-=d.start*.03;mx+=d.start*.03}
-  var W=400,H=84,pad=8;
-  var P=ser.map(function(v,i){return [i*(W-pad)/(ser.length-1),H-8-((v-mn)/(mx-mn))*(H-22)]});
-  var line="M"+P.map(function(p){return p[0].toFixed(1)+" "+p[1].toFixed(1)}).join(" L");
-  var area=line+" L"+P[P.length-1][0].toFixed(1)+" "+H+" L0 "+H+" Z";
-  var by=H-8-((d.start-mn)/(mx-mn))*(H-22),end=P[P.length-1];
+  /* chart (v13): green/red bars, one per sell (closed trade or half-sell), real P&L from data.json sell_pnl */
+  var sells=(d.sell_pnl&&d.sell_pnl.length?d.sell_pnl:(d.closed_trades||[]).slice().reverse().map(function(c){return{pnl:c.pnl}})).slice(-60);
   var lc=dp<0?"#ffe3ec":dp>0?"#39ff88":"#ffffff";
-  var chart='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="--lc:'+lc+'"><defs><linearGradient id="ag" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="'+lc+'" stop-opacity=".22"/><stop offset="1" stop-color="'+lc+'" stop-opacity="0"/></linearGradient></defs>'
-   +'<line x1="0" x2="'+W+'" y1="'+by.toFixed(1)+'" y2="'+by.toFixed(1)+'" stroke="#fff" stroke-opacity=".35" stroke-width="1.2" stroke-dasharray="1 6" stroke-linecap="round"/>'
-   +'<path d="'+area+'" fill="url(#ag)"/><path class="draw" d="'+line+'" fill="none" stroke="'+lc+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>'
-   +'<circle class="pulse" cx="'+end[0]+'" cy="'+end[1]+'" r="5" fill="'+lc+'"/><circle cx="'+end[0]+'" cy="'+end[1]+'" r="5.5" fill="'+lc+'" stroke="rgba(0,0,0,.5)" stroke-width="2"/></svg>';
+  var W=400,H=84,mid=H/2,chart;
+  if(!sells.length){chart='<div class="nobars">No closed trades yet</div>'}
+  else{
+    var amax=Math.max.apply(null,sells.map(function(s){return Math.abs(s.pnl)}))||1,bw=W/sells.length,gb="",rb="";
+    var best=sells.reduce(function(a,b){return b.pnl>a.pnl?b:a}),worst=sells.reduce(function(a,b){return b.pnl<a.pnl?b:a});
+    var nw=sells.filter(function(s){return s.pnl>0}).length;
+    sells.forEach(function(s,i){var hh=Math.max(1.5,Math.abs(s.pnl)/amax*(mid-12)),up=s.pnl>=0;
+      var r='<rect x="'+(i*bw+bw*.16).toFixed(1)+'" y="'+(up?mid-hh:mid).toFixed(1)+'" width="'+(bw*.68).toFixed(1)+'" height="'+hh.toFixed(1)+'" rx="1.5"/>';
+      if(up)gb+=r;else rb+=r});
+    chart='<svg class="bars" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><line x1="0" x2="'+W+'" y1="'+mid+'" y2="'+mid+'" stroke="#fff" stroke-opacity=".35" stroke-width="1" vector-effect="non-scaling-stroke"/>'
+     +'<g fill="#39ff88" style="filter:drop-shadow(0 0 3px rgba(57,255,136,.55))">'+gb+'</g><g fill="#ff3b6b" style="filter:drop-shadow(0 0 3px rgba(255,59,107,.6))">'+rb+'</g></svg>'
+     +'<span class="bl tl">best '+sgn(best.pnl)+'</span><span class="bl bl2">worst '+sgn(worst.pnl)+'</span><span class="bl tr">'+sells.length+' sells · '+nw+' green · '+(sells.length-nw)+' red</span>';
+  }
   /* goal (thin) */
   var step=100/MIL.length,fill=0,ni=-1;
   for(var j=0;j<MIL.length;j++){if(mult<MIL[j]){ni=j;break}}
