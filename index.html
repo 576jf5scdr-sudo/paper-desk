@@ -164,6 +164,7 @@ body.light .banner{color:#9a5b00}
 .err{background:rgba(255,90,82,.12);border:1px solid rgba(255,90,82,.4);color:#ff9d97;border-radius:14px;padding:12px;font-size:13px}
 /* dynamic-island style toast */
 .toast{position:fixed;left:50%;top:calc(var(--safe-t) + 8px);transform:translate(-50%,-90px);width:min(402px,calc(100vw - 20px));background:#000;color:#fff;border-radius:999px;padding:10px 18px 10px 12px;display:flex;align-items:center;gap:12px;z-index:9;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 14px 40px rgba(0,0,0,.6);transition:transform .55s cubic-bezier(.2,1.1,.3,1)}
+#upd{position:fixed;left:50%;bottom:calc(var(--safe-b) + 14px);transform:translateX(-50%);z-index:90;border:0;font:inherit;font-size:14px;font-weight:800;color:#06240f;background:#39ff88;padding:11px 20px;border-radius:999px;box-shadow:0 8px 28px rgba(57,255,136,.35);cursor:pointer}
 .toast.on{transform:translate(-50%,0)}
 .toast .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:12px;flex:none}
 .toast .tt{flex:1;min-width:0}
@@ -1297,7 +1298,17 @@ if(window.__DATA__){show(window.__DATA__)}
 else{
   load();setInterval(load,30000);
   document.addEventListener("visibilitychange",function(){if(!document.hidden){load();fetchLive()}});
-  if("serviceWorker" in navigator&&location.protocol!=="file:"){navigator.serviceWorker.register("sw.js").catch(function(){})}
+  if("serviceWorker" in navigator&&location.protocol!=="file:"){
+    /* v15: robust updates. The page knows its own version; it asks the server (no-store) for sw.js, and if the version differs it shows an "Updated, tap to reload" bar. */
+    var APP_V="paper-desk-v15",updBar=null,hadCtl=!!navigator.serviceWorker.controller,regP=navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(function(){});
+    var showUpd=function(){if(updBar)return;updBar=document.createElement("button");updBar.id="upd";updBar.textContent="Updated · tap to reload";
+      updBar.onclick=function(){try{caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==APP_V}).map(function(k){return caches.delete(k)}))}).then(function(){location.reload()},function(){location.reload()})}catch(e){location.reload()}};document.body.appendChild(updBar)};
+    var checkUpd=function(){regP.then(function(r){if(r&&r.update)r.update().catch(function(){})});
+      fetch("sw.js?v="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=/CACHE\s*=\s*"([^"]+)"/.exec(t);if(m&&m[1]!==APP_V)showUpd()}).catch(function(){})};
+    navigator.serviceWorker.addEventListener("controllerchange",function(){if(hadCtl&&!window.__reloading){window.__reloading=1;if(SH.open)showUpd();else location.reload()}});
+    document.addEventListener("visibilitychange",function(){if(!document.hidden)checkUpd()});window.addEventListener("pageshow",function(e){if(e.persisted)checkUpd()});
+    setTimeout(checkUpd,4000);setInterval(checkUpd,5*60*1000);
+  }
 }
 setInterval(fetchLive,12000);
 })();
