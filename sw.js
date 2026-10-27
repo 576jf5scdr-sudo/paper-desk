@@ -1,5 +1,5 @@
 // Paper Desk service worker: app shell cached for offline use; data.json is network-first.
-const CACHE = "paper-desk-v10";
+const CACHE = "paper-desk-v11";
 const SHELL = ["./", "./index.html", "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png",
   "./fonts/Inter-400.ttf", "./fonts/Inter-500.ttf", "./fonts/Inter-600.ttf", "./fonts/Inter-700.ttf", "./fonts/Inter-800.ttf"];
 self.addEventListener("install", (e) => {
