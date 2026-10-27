@@ -603,9 +603,9 @@ body:not(.light) :is(.panel,.card,.livebar,.spark,.sum div,.rules,.goal,.menu,.s
 #pg-overview .spark .pulse{transform-box:fill-box}
 /* v13: bar chart under the balance */
 #pg-overview .spark{position:relative;margin-top:10px!important;height:92px!important}
-#pg-overview .spark svg.bars{filter:none}
+#pg-overview .spark svg.bars{filter:none;height:calc(100% - 15px)!important}
 #pg-overview .spark .bl{background:none!important;border:0!important;box-shadow:none!important;position:absolute;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);padding:0 14px;line-height:1;pointer-events:none}
-#pg-overview .spark .tl{left:0;top:0}#pg-overview .spark .bl2{left:0;bottom:0}#pg-overview .spark .tr{right:0;top:0;font-weight:700;color:rgba(255,255,255,.55)}
+#pg-overview .spark .tl{display:none}#pg-overview .spark .bl2{display:none}#pg-overview .spark .tr{right:0;bottom:0;font-weight:700;color:rgba(255,255,255,.55)}
 #pg-overview .spark .nobars{height:100%;display:grid;place-items:center;font-size:12px;color:rgba(255,255,255,.6)}
 .hgoal{margin:0 -14px;padding:7px 14px 9px;background:rgba(0,0,0,.34);display:flex;flex-direction:column;gap:5px}
 .gt2{font-size:12px;color:rgba(255,255,255,.82);font-weight:600}.gt2 b{color:#fff;font-weight:800}
@@ -748,7 +748,7 @@ function renderTop(d){
       if(up)gb+=r;else rb+=r});
     chart='<svg class="bars" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><line x1="0" x2="'+W+'" y1="'+mid+'" y2="'+mid+'" stroke="#fff" stroke-opacity=".35" stroke-width="1" vector-effect="non-scaling-stroke"/>'
      +'<g fill="#39ff88" style="filter:drop-shadow(0 0 3px rgba(57,255,136,.55))">'+gb+'</g><g fill="#ff3b6b" style="filter:drop-shadow(0 0 3px rgba(255,59,107,.6))">'+rb+'</g></svg>'
-     +'<span class="bl tl">best '+sgn(best.pnl)+'</span><span class="bl bl2">worst '+sgn(worst.pnl)+'</span><span class="bl tr">'+sells.length+' sells · '+nw+' green · '+(sells.length-nw)+' red</span>';
+     +'<span class="bl tl">best '+sgn(best.pnl)+'</span><span class="bl bl2">worst '+sgn(worst.pnl)+'</span><span class="bl tr">best '+sgn(best.pnl)+' · worst '+sgn(worst.pnl)+' · '+sells.length+' sells</span>';
   }
   /* goal (thin) */
   var step=100/MIL.length,fill=0,ni=-1;
@@ -980,7 +980,7 @@ function tcFetch(x,ev,seq){
   });
 }
 function tcDraw(x,ev,cc,box){
-  var W=box.clientWidth||360,H=box.clientHeight||300,pl=6,pr=62,pt=24,pb=20,cs=cc.candles,w=cc.win,t0=w.t0,t1=Math.max(w.t1,cs.length?cs[cs.length-1][0]+cc.slot:w.t1);
+  var W=box.clientWidth||360,H=box.clientHeight||300,pl=6,pr=62,pt=12,pb=36,cs=cc.candles,w=cc.win,t0=w.t0,t1=Math.max(w.t1,cs.length?cs[cs.length-1][0]+cc.slot:w.t1);
   var o=ev.open?x:null,L=o?LIVE[o.pair]:null,live=L&&L.ok?L.px:null;
   var vs=[];cs.forEach(function(q){vs.push(q[2],q[3])});vs.push(ev.entryP);ev.sells.forEach(function(s){vs.push(s.p)});if(live)vs.push(live);
   var mn=Math.min.apply(null,vs),mx=Math.max.apply(null,vs),pad=(mx-mn)*.08||mx*.05;mn=Math.max(mn-pad,mn*.2);mx+=pad;
@@ -988,20 +988,24 @@ function tcDraw(x,ev,cc,box){
   var X=function(t){return pl+(t-t0)/(t1-t0)*(W-pl-pr)},Y=function(v){return pt+(1-(v-mn)/(mx-mn))*(H-pt-pb)};
   var s='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" font-family="Inter,system-ui,sans-serif">';
   for(var i=0;i<=4;i++){var v=mn+(mx-mn)*i/4,y=Y(v);s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="#fff" stroke-opacity=".06"/><text x="'+(W-pr+5)+'" y="'+(y+3.5).toFixed(1)+'" fill="#8d96aa" font-size="10">'+px(v)+'</text>'}
-  for(i=0;i<=3;i++){var t=t0+(t1-t0)*i/3;s+='<text x="'+X(t).toFixed(1)+'" y="'+(H-5)+'" fill="#8d96aa" font-size="10" text-anchor="'+(i===0?"start":i===3?"end":"middle")+'">'+hm(t*1000)+'</text>'}
+  for(i=0;i<=3;i++){var t=t0+(t1-t0)*i/3;s+='<text x="'+X(t).toFixed(1)+'" y="'+(H-21)+'" fill="#8d96aa" font-size="10" text-anchor="'+(i===0?"start":i===3?"end":"middle")+'">'+hm(t*1000)+'</text>'}
   var cw=Math.max(1.6,(W-pl-pr)*cc.slot/(t1-t0)*.7);
   cs.forEach(function(q){var up=q[4]>=q[1],col=up?"#39ff88":"#ff3b6b",cx=X(q[0]+cc.slot/2),yo=Y(q[1]),yc=Y(q[4]);
     s+='<line x1="'+cx.toFixed(1)+'" x2="'+cx.toFixed(1)+'" y1="'+Y(q[2]).toFixed(1)+'" y2="'+Y(q[3]).toFixed(1)+'" stroke="'+col+'" stroke-width="1"/><rect x="'+(cx-cw/2).toFixed(1)+'" y="'+Math.min(yo,yc).toFixed(1)+'" width="'+cw.toFixed(1)+'" height="'+Math.max(1,Math.abs(yc-yo)).toFixed(1)+'" fill="'+col+'" fill-opacity=".9"/>'});
   var tag=function(y,txt,col,fg){var wd=txt.length*5.9+8;return '<rect x="'+(W-pr+1)+'" y="'+(y-8).toFixed(1)+'" width="'+Math.min(wd,pr-1)+'" height="16" rx="4" fill="'+col+'"/><text x="'+(W-pr+5)+'" y="'+(y+3.5).toFixed(1)+'" fill="'+(fg||"#05060a")+'" font-size="9.5" font-weight="800">'+txt+'</text>'};
   var ey=Y(ev.entryP);
   s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+ey.toFixed(1)+'" y2="'+ey.toFixed(1)+'" stroke="#39ff88" stroke-width="1.2" stroke-dasharray="5 4"/>'+tag(ey,"BUY","#39ff88");
-  if(ev.stop&&!stopIn){var low=ev.stop.p<mn;s+='<text x="'+(pl+4)+'" y="'+(low?H-pb-5:pt+12)+'" fill="#ff7d9a" font-size="10" font-weight="700">'+(low?'↓ ':'↑ ')+ev.stop.l+' · $'+px(ev.stop.p)+' (off chart)</text>'}
-  if(stopIn){var sy=Y(ev.stop.p);s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+sy.toFixed(1)+'" y2="'+sy.toFixed(1)+'" stroke="#ff3b6b" stroke-width="1" stroke-dasharray="2 4" stroke-opacity=".8"/><text x="'+(pl+4)+'" y="'+(sy-4).toFixed(1)+'" fill="#ff7d9a" font-size="10" font-weight="700">'+ev.stop.l+' · $'+px(ev.stop.p)+'</text>'}
+  if(ev.stop&&!stopIn){var low=ev.stop.p<mn;s+='<text x="'+(W-pr-6)+'" y="'+(low?H-pb-5:pt+12)+'" text-anchor="end" fill="#ff7d9a" font-size="10" font-weight="700">'+(low?'↓ ':'↑ ')+ev.stop.l+' · $'+px(ev.stop.p)+' (off chart)</text>'}
+  if(stopIn){var sy=Y(ev.stop.p);s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+sy.toFixed(1)+'" y2="'+sy.toFixed(1)+'" stroke="#ff3b6b" stroke-width="1" stroke-dasharray="2 4" stroke-opacity=".8"/><text x="'+(W-pr-6)+'" y="'+(sy+13).toFixed(1)+'" text-anchor="end" fill="#ff7d9a" font-size="10" font-weight="700">'+ev.stop.l+' · $'+px(ev.stop.p)+'</text>'}
   if(live){var ly=Y(live),pc=(live/ev.entryP-1)*100;s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+ly.toFixed(1)+'" y2="'+ly.toFixed(1)+'" stroke="#fff" stroke-opacity=".7" stroke-width="1" stroke-dasharray="1 3"/>'+tag(Math.abs(ly-ey)<15?ey+(ly>=ey?16:-16):ly,"NOW","#ffffff")+'<circle cx="'+(W-pr-4)+'" cy="'+ly.toFixed(1)+'" r="4" fill="#fff" stroke="#05060a" stroke-width="1.5"/>'}
   if(ev.entryT!=null){var ex=X(ev.entryT);s+='<line x1="'+ex.toFixed(1)+'" x2="'+ex.toFixed(1)+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#39ff88" stroke-opacity=".28" stroke-dasharray="2 4"/><path d="M'+ex.toFixed(1)+' '+(ey-1).toFixed(1)+' l-7 12 h14 z" fill="#39ff88" stroke="#05060a" stroke-width="1.4"/>'}
   ev.sells.forEach(function(sl){var sx=X(sl.t),sy2=Y(sl.p),col=sl.partial?"#ff9f0a":"#ff3b6b";
     s+='<line x1="'+sx.toFixed(1)+'" x2="'+sx.toFixed(1)+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="'+col+'" stroke-opacity=".3" stroke-dasharray="2 4"/><path d="M'+sx.toFixed(1)+' '+(sy2+1).toFixed(1)+' l-7 -12 h14 z" fill="'+col+'" stroke="#05060a" stroke-width="1.4"/>'});
-  s+='<g font-size="10.5" font-weight="700"><circle cx="'+(pl+6)+'" cy="11" r="4" fill="#39ff88"/><text x="'+(pl+14)+'" y="14.5" fill="#c9cfdc">Buy</text><circle cx="'+(pl+48)+'" cy="11" r="4" fill="#ff9f0a"/><text x="'+(pl+56)+'" y="14.5" fill="#c9cfdc">Half sell</text><circle cx="'+(pl+118)+'" cy="11" r="4" fill="#ff3b6b"/><text x="'+(pl+126)+'" y="14.5" fill="#c9cfdc">Sell</text><text x="'+(W-pr)+'" y="14.5" fill="#8d96aa" text-anchor="end" font-weight="600">'+cc.agName+' candles</text></g></svg>';
+  var lx=W-pr,ly2=H-5,lg='<g font-size="10.5" font-weight="700" text-anchor="end">';
+  [[cc.agName+" candles","#8d96aa",null],["Sell","#c9cfdc","#ff3b6b"],["Half sell","#c9cfdc","#ff9f0a"],["Buy","#c9cfdc","#39ff88"]].forEach(function(it){
+    lg+='<text x="'+lx+'" y="'+ly2+'" fill="'+it[1]+'"'+(it[2]?'':' font-weight="600"')+'>'+it[0]+'</text>';lx-=it[0].length*6+(it[2]?4:10);
+    if(it[2]){lg+='<circle cx="'+(lx-4)+'" cy="'+(ly2-3.5)+'" r="4" fill="'+it[2]+'"/>';lx-=18}});
+  s+=lg+'</g></svg>';
   box.innerHTML=s;
 }
 function tcPaint(x,build){
@@ -1300,7 +1304,7 @@ else{
   document.addEventListener("visibilitychange",function(){if(!document.hidden){load();fetchLive()}});
   if("serviceWorker" in navigator&&location.protocol!=="file:"){
     /* v15: robust updates. The page knows its own version; it asks the server (no-store) for sw.js, and if the version differs it shows an "Updated, tap to reload" bar. */
-    var APP_V="paper-desk-v15",updBar=null,hadCtl=!!navigator.serviceWorker.controller,regP=navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(function(){});
+    var APP_V="paper-desk-v17",updBar=null,hadCtl=!!navigator.serviceWorker.controller,regP=navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(function(){});
     var showUpd=function(){if(updBar)return;updBar=document.createElement("button");updBar.id="upd";updBar.textContent="Updated · tap to reload";
       updBar.onclick=function(){try{caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==APP_V}).map(function(k){return caches.delete(k)}))}).then(function(){location.reload()},function(){location.reload()})}catch(e){location.reload()}};document.body.appendChild(updBar)};
     var checkUpd=function(){regP.then(function(r){if(r&&r.update)r.update().catch(function(){})});
