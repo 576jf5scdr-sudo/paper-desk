@@ -758,7 +758,7 @@ function renderTop(d){
   var goalMult=d.goal/d.start,doneG=mult>=goalMult;
   var gtxt=doneG?'✓ goal done · '+mult.toFixed(2)+'× now':'next <b>'+MIL[ni]+'×</b> · '+usd(d.start*MIL[ni]-d.equity)+' to go';
   $("#eqtop").innerHTML='Book equity';
-  $("#hpills").innerHTML='<div class="mult num'+(mult<1?" down":"")+'">'+mult.toFixed(2)+'×</div><div class="dpill '+(dp>0?"pos":dp<0?"neg":"zero")+'">'+sgn(dp)+' today</div>';
+  $("#hpills").innerHTML='<div class="mult num'+(mult<1?" down":"")+'">'+mult.toFixed(2)+'×</div><div class="dpill '+(dp>0?"pos":dp<0?"neg":"zero")+'">'+sgn(dp)+' today</div><div class="dpill zero" style="font-size:10.5px;opacity:.85">daily cap: off</div>';
   $("#eqsub").innerHTML='<div class="hs1"><span class="plp '+(pl>0?"pos":pl<0?"neg":"zero")+'">'+sgn(pl)+' ('+spct(pl/d.start*100)+')</span><span class="was">· started at '+usd(d.start).replace(".00","")+'</span></div>'
    +'<div class="hs2"><span class="fire'+(d.win_streak?"":" z")+'">🔥 <b>'+(d.win_streak||0)+'</b> win streak</span>'+(d.loss_streak?'<span class="streak">'+d.loss_streak+'L streak</span>':'')+'<span class="tw">'+closedN+' trades · '+winp+'% win</span></div>';
   $("#spark").innerHTML=chart;
@@ -1235,7 +1235,7 @@ function buildFunnel(d){
   if(vl&&vt>=rt)vAct='<b>'+(vl.verdict==="SKIP"?"killed":"passed")+' $'+esc(short(vl.coin.trim()))+'</b> <span class="'+(vl.verdict==="SKIP"?"bad":"pos")+'">'+(vl.verdict==="SKIP"?"× ":"")+esc(vl.short)+'</span>';
   else if(rj)vAct='<b>killed '+esc(short(rj.coin))+'</b> <span class="bad">× '+esc(rj.why)+'</span>';
   var sell=(d.feed||[]).filter(function(f){return f.kind==="sell"})[0];
-  var rAct=d.halt?'<b class="neg">halted</b> <span class="bad">loss cap hit</span>':sell?'<b>sold '+esc(short(sell.coin))+'</b> <span class="zero">'+esc(sell.why||"")+'</span>':'<b class="pos">all clear</b> <span class="zero">'+d.open_count+'/'+cap+' open</span>';
+  var rAct=d.halt?'<b class="neg">paused</b> <span class="bad">'+esc(d.halt)+'</span>':sell?'<b>sold '+esc(short(sell.coin))+'</b> <span class="zero">'+esc(sell.why||"")+'</span>':'<b class="pos">all clear</b> <span class="zero">'+d.open_count+'/'+cap+' open</span>';
   var rows=[
    ["Sniper","fresh pairs",lastAct(d,"SNIPER"),'<span class="fp o">'+kfmt(d.scanned)+' seen</span>'],
    ["Vetter","safety gates",vAct,'<span class="fp r">'+kfmt(d.rejected)+' killed</span>'],
