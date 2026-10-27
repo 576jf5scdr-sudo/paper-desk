@@ -418,6 +418,66 @@ a.pipb span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical
 #spark{flex:1 1 92px;min-height:92px;max-height:210px}
 .pg>#spark{flex:1 1 92px}
 .ct b{font-size:15px;overflow:hidden;text-overflow:ellipsis}.card .ring{width:24px;height:24px}.card .ch{gap:7px}
+
+/* v8: everything on Overview, compact */
+#pg-overview{gap:8px}
+#pg-overview .eqrow{margin-top:0}
+#pg-overview .odo{height:44px;margin-top:2px}
+#pg-overview .odo .big{font-size:40px}
+#pg-overview .odo .cts{font-size:20px;margin-bottom:3px}
+#pg-overview .eq-top span{font-size:12px}
+#pg-overview .mult{font-size:12.5px;padding:2px 9px}
+#pg-overview .eq-sub{font-size:13px;gap:1px;margin-top:2px}
+#pg-overview .eq-sub .st{font-size:11px}
+#pg-overview .streak{font-size:11px;padding:1px 7px}
+#pg-overview .mascot{width:70px;height:78px}
+#pg-overview .livebar{padding:7px 12px;border-radius:16px}
+#pg-overview .lb-k{font-size:11px}
+#pg-overview .lb-s{font-size:11px;margin-top:2px;line-height:1.35}
+#pg-overview .lb-v{font-size:21px;line-height:23px}
+#pg-overview .lb-d{font-size:12px;margin-top:1px}
+#pg-overview .spark{flex:1 1 56px;min-height:56px;max-height:120px;padding:6px 10px;border-radius:16px}
+#pg-overview .sum{gap:6px}
+#pg-overview .sum div{padding:6px 10px;border-radius:13px}
+#pg-overview .sum small{font-size:11px}
+#pg-overview .sum b{font-size:15px;margin-top:1px}
+#pg-overview a.pipb{padding:6px 10px;font-size:12px;line-height:1.3;border-radius:13px}
+#pg-overview a.pipb svg{width:18px;height:18px}
+#pg-overview .goal{padding:8px 12px 2px;border-radius:16px}
+#pg-overview .goal h2{font-size:14px}
+#pg-overview .goal .gt span{font-size:11.5px}
+#pg-overview .gb{height:52px;margin:0 10px}
+#pg-overview .gtrack,#pg-overview .gfill{top:26px;height:9px}
+#pg-overview .gm{top:23px}
+#pg-overview .gm i{width:15px;height:15px;border-width:2px}
+#pg-overview .gm.goal2 i{width:18px;height:18px;margin:-1px auto}
+#pg-overview .gm span{font-size:11px;margin-top:3px}
+#pg-overview .gm.goal2 span{margin-top:4px}
+#pg-overview .gpill{font-size:11px;padding:2px 8px;top:0}
+/* role cards: 3-col mini tiles */
+#pg-overview .grid{grid-template-columns:repeat(3,1fr);gap:6px}
+#pg-overview .card{padding:8px 9px;border-radius:14px;animation:none;opacity:1;transform:none}
+#pg-overview .card .ch{gap:6px}
+#pg-overview .card .ico{width:22px;height:22px;border-radius:7px;box-shadow:none}
+#pg-overview .card .ico svg{width:14px;height:14px}
+#pg-overview .card .ct b{font-size:12.5px;line-height:16px}
+#pg-overview .card .ct small,#pg-overview .card .ring,#pg-overview .card .viz,#pg-overview .card .rs,#pg-overview .card .slots,#pg-overview .card .cap{display:none}
+#pg-overview .card .mid{margin-top:5px;min-height:0;font-size:12px;gap:4px}
+#pg-overview .card .pill{font-size:11px;padding:2px 6px}
+#pg-overview .card .cf{font-size:11px;margin-top:4px}
+#pg-overview .card .cf .p{font-size:12px}
+#pg-overview .rules{padding:8px 12px;border-radius:14px}
+#pg-overview .rules summary{font-size:12px}
+@media(min-width:900px){#pg-overview .grid{grid-template-columns:repeat(3,1fr)}}
+#pg-overview .card .mid .t{display:none}
+#pg-overview .card .mid{justify-content:flex-start}
+#pg-overview .card .ct b{font-size:11.5px}
+#pg-overview .card .ico{width:18px;height:18px;border-radius:6px}
+#pg-overview .card .ico svg{width:12px;height:12px}
+#pg-overview .card .ch{gap:5px}
+#pg-overview .card .cf span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#pg-overview .card .cf{gap:4px}
+#pg-overview .spark{max-height:110px}
 </style>
 </head>
 <body>
@@ -913,18 +973,18 @@ var PG=[
  ["positions","Positions","Open trades, live",'<svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>'],
  ["activity","Activity","What the desk just did",'<svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>'],
  ["history","History","Closed trades",'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'],
- ["coins","Coins","Every coin Pip vetted",'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5c0-1 1-1.6 2.5-1.6s2.5.6 2.5 1.6-1 1.4-2.5 1.8-2.5.8-2.5 1.8 1 1.6 2.5 1.6 2.5-.6 2.5-1.6"/></svg>'],
- ["stats","Stats","Roles, caps and rules",'<svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>']
+ ["coins","Coins","Every coin Pip vetted",'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5c0-1 1-1.6 2.5-1.6s2.5.6 2.5 1.6-1 1.4-2.5 1.8-2.5.8-2.5 1.8 1 1.6 2.5 1.6 2.5-.6 2.5-1.6"/></svg>']
 ],PIDS=PG.map(function(p){return p[0]});
 function curPage(){
-  var h=(location.hash||"").replace(/^#\/?/,"").toLowerCase();if(h==="desk")h="overview";
+  var h=(location.hash||"").replace(/^#\/?/,"").toLowerCase();if(h==="desk"||h==="stats")h="overview";
   if(PIDS.indexOf(h)>=0)return h;
-  var v=(qs.get("view")||"").toLowerCase();if(v==="desk")v="overview";
+  var v=(qs.get("view")||"").toLowerCase();if(v==="desk"||v==="stats")v="overview";
   return PIDS.indexOf(v)>=0?v:"overview";
 }
 function setNav(open){var a=$("#app");if(!a)return;a.classList.toggle("nav",!!open);var m=$("#menu");if(m)m.setAttribute("aria-expanded",open?"true":"false")}
 function route(){
   var p=curPage();VIEW=p;
+  if(location.hash&&location.hash.replace(/^#\/?/,"").toLowerCase()==="stats"&&history.replaceState)history.replaceState(null,"","#overview");
   document.querySelectorAll(".pg").forEach(function(e){e.classList.toggle("on",e.id==="pg-"+p)});
   document.querySelectorAll("#nav a").forEach(function(a){a.classList.toggle("on",a.getAttribute("data-p")===p)});
   var m=PG[PIDS.indexOf(p)];$("#ptitle").textContent=m[1];$("#psub").textContent=m[2];
@@ -941,12 +1001,11 @@ function shell(){
   +'<main class="main"><header class="top"><button class="menu" id="menu" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button><div><h1 id="ptitle"></h1><div class="sub" id="psub"></div></div><div class="sp"></div><span class="pchip">PRACTICE</span></header>'
   +'<div class="pages">'
   +'<section class="pg" id="pg-overview"><div class="eqrow"><div class="eqleft"><div class="eq-top" id="eqtop"></div><div class="odo" id="odo"></div><div id="eqsub"></div></div><div class="mascot" id="mascot" title="Pip, the paper-trading pumpkin"></div></div>'
-   +'<div class="livebar" id="livebar"></div><div class="spark" id="spark"></div><div class="sum" id="sum"></div><a class="pipb" id="pipsay" href="#coins"></a><div class="panel goal" id="goalp"></div></section>'
+   +'<div class="livebar" id="livebar"></div><div class="spark" id="spark"></div><div class="sum" id="sum"></div><a class="pipb" id="pipsay" href="#coins"></a><div class="panel goal" id="goalp"></div><div class="grid" id="grid"></div><details class="rules panel"><summary>Rules &amp; notes ▾</summary><div class="foot" id="foot"></div></details></section>'
   +'<section class="pg" id="pg-positions"><div class="panel fill" id="openp"></div></section>'
   +'<section class="pg" id="pg-activity"><div class="panel fill"><div class="ph"><span><i class="ld scandot"></i>last scan <b class="scanago">…</b></span></div><div class="feed" id="feed"></div><button class="more" id="feedmore" data-more="feed"></button></div></section>'
   +'<section class="pg" id="pg-history"><div class="panel fill" id="histp"></div></section>'
   +'<section class="pg" id="pg-coins"><div class="panel fill" id="coinsp"></div></section>'
-  +'<section class="pg" id="pg-stats"><div class="grid" id="grid"></div><details class="rules panel"><summary>Rules &amp; notes ▾</summary><div class="foot" id="foot"></div></details></section>'
   +'</div></main>';
   $("#menu").addEventListener("click",function(){setNav(!$("#app").classList.contains("nav"))});
   $("#scrim").addEventListener("click",function(){setNav(false)});
