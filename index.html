@@ -310,6 +310,7 @@ body.shopen{overflow:hidden}
 .sh-line{position:absolute;inset:0;padding:12px 10px 8px;display:flex;flex-direction:column}
 .sh-line svg{flex:1;width:100%;min-height:0}
 .sh-line .cap2{font-size:11.5px;color:var(--mute);margin-top:6px;line-height:1.4}
+.tc{position:absolute;inset:0}.tc svg{display:block}
 .sh-load{position:absolute;inset:0;display:grid;place-items:center;color:var(--mute);font-size:13px;pointer-events:none}
 .still *{animation:none!important;transition:none!important}.still .card{opacity:1;transform:none}.still .row.fresh .tx{animation:none}.still .draw{stroke-dashoffset:0}.still .toast{display:none}.still .stamp{opacity:1;transform:translate(-50%,-50%) rotate(-14deg)}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important;transition-duration:.01s!important}}
@@ -658,7 +659,7 @@ body:not(.light) :is(.panel,.card,.livebar,.spark,.sum div,.rules,.goal,.menu,.s
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-hidden="true"><div class="sh-in">
   <div class="sh-top" id="shtop"><div class="grab"></div><div class="sh-row"><div class="sh-id" id="shid"></div><button class="sh-x" id="shx" aria-label="Close chart">✕</button></div></div>
   <div class="sh-stats" id="shstats"></div><div class="sh-lad" id="shlad"></div>
-  <div class="sh-tabs" id="shtabs"><button data-m="ds" class="on">DexScreener chart</button><button data-m="line">Price line</button><a id="shlink" href="#" target="_blank" rel="noopener">Open on DexScreener ↗</a></div>
+  <div class="sh-tabs" id="shtabs"><button data-m="tc" class="on">Trade chart</button><button data-m="ds">DexScreener</button><button data-m="line">Line</button><a id="shlink" href="#" target="_blank" rel="noopener">Open on DexScreener ↗</a></div>
   <div class="sh-chart" id="shchart"></div><div class="sh-note" id="shnote"></div>
 </div></div>
 <script>
@@ -893,7 +894,7 @@ function buildHist(d){
 
 
 /* ---------- tap-to-chart sheet ---------- */
-var SH={open:false,kind:null,key:null,mode:"ds",loaded:false,timer:null,auto:false};
+var SH={open:false,seq:0,kind:null,key:null,mode:"tc",loaded:false,timer:null,auto:false};
 function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||"[]")}catch(e){return []}}
 function recPoint(pair,v){try{var k="pd_pts_"+pair,a=lsGet(k),t=Math.floor(Date.now()/1000);if(a.length&&t-a[a.length-1][0]<10)return;a.push([t,v]);localStorage.setItem(k,JSON.stringify(a.slice(-300)))}catch(e){}}
 function findOpen(pair){return openList().filter(function(p){return p.pair===pair})[0]}
@@ -942,6 +943,82 @@ function lineChart(pts,entry,kind){
     +(kind==="open"?' · one point per scan (~10 min) plus every live poll while this app is open':' · points sampled at each scan until the exit');
   return '<div class="sh-line">'+svg+'<div class="cap2">'+cap+'</div></div>';
 }
+/* ===== v14: in-app trade chart: real GeckoTerminal candles + paper entry / sells / stop / live price ===== */
+var CC={},PEND={},GT_NET={solana:"solana",ethereum:"eth",base:"base",bsc:"bsc",arbitrum:"arbitrum",polygon:"polygon_pos",avalanche:"avax",optimism:"optimism"},STOP_PCT={SNIPER:25,MOMENTUM:20,DIP_HUNTER:15};
+function tcEvents(kind,x){
+  var o=kind==="open"?x:null,openMs=Date.parse(o?o.opened:x.opened_ts||""),link=x.link,sells=[];
+  ((D&&D.closed_trades)||[]).forEach(function(c){
+    if(c.link!==link)return;var om=Date.parse(c.opened_ts||"");
+    if(isFinite(openMs)&&isFinite(om)&&Math.abs(om-openMs)<=120000||(!isFinite(openMs)&&c===x))sells.push({t:Date.parse(c.ts)/1000,p:c.exit,partial:!!c.partial||(!c.final),pnl:c.pnl,frac:c.fraction})});
+  sells.sort(function(a,b){return a.t-b.t});
+  var role=x.role||"SNIPER",stop=null;
+  if(o){if(o.half_taken||o.armed||(o.peak_pct||0)>=50)stop={p:o.entry*1.5,l:"floor +50%"};else if(STOP_PCT[role])stop={p:o.entry*(1-STOP_PCT[role]/100),l:"stop −"+STOP_PCT[role]+"%"}}
+  else if(/^stop loss/i.test(x.reason||"")&&STOP_PCT[role])stop={p:x.entry*(1-STOP_PCT[role]/100),l:"stop −"+STOP_PCT[role]+"%"};
+  return {entryT:isFinite(openMs)?openMs/1000:null,entryP:x.entry,sells:sells,stop:stop,open:!!o};
+}
+function tcAgg(span){return span<=3*3600?["minute",1,60]:span<=24*3600?["minute",5,300]:span<=5*86400?["minute",15,900]:["hour",1,3600]}
+function tcWindow(ev){
+  var now=Date.now()/1000,a=ev.entryT!=null?ev.entryT:(ev.sells[0]?ev.sells[0].t-3600:now-3600);
+  var b=ev.open?now:(ev.sells.length?ev.sells[ev.sells.length-1].t:now);
+  var span=Math.max(600,b-a),ag=tcAgg(span*1.3),m=Math.max(12*ag[2],span*.08);
+  return {t0:a-m,t1:b+(ev.open?ag[2]*2:Math.max(8*ag[2],span*.08)),ag:ag};
+}
+function tcSave(key,cc){try{var ix=JSON.parse(localStorage.getItem("pd_cc_ix")||"[]").filter(function(k){return k!==key});ix.push(key);while(ix.length>8)localStorage.removeItem("pd_cc_"+ix.shift());localStorage.setItem("pd_cc_ix",JSON.stringify(ix));localStorage.setItem("pd_cc_"+key,JSON.stringify(cc))}catch(e){}}
+function tcLoad(key){try{var v=JSON.parse(localStorage.getItem("pd_cc_"+key)||"null");return v&&v.candles&&v.candles.length?v:null}catch(e){return null}}
+function tcFetch(x,ev,seq){
+  var pair=(ev.open?x.pair:x.link.replace(/\/$/,"").split("/").pop()),ch=x.chain,net=GT_NET[ch],key=ch+"/"+pair,w=tcWindow(ev),c=CC[key];
+  if(!net)return Promise.reject(new Error("unsupported chain "+ch));
+  var pairP=c&&c.pa?Promise.resolve(c.pa):fetch("https://api.dexscreener.com/latest/dex/pairs/"+encodeURIComponent(ch)+"/"+encodeURIComponent(pair)).then(function(r){if(!r.ok)throw new Error("DexScreener "+r.status);return r.json()}).then(function(j){var p=j&&j.pairs&&j.pairs[0];if(!p)throw new Error("pair not found on DexScreener");return {a:p.pairAddress,tok:p.baseToken&&p.baseToken.address}});
+  return pairP.then(function(pa){
+    var n=Math.min(1000,Math.ceil((w.t1-w.t0)/w.ag[2])+5);
+    var u="https://api.geckoterminal.com/api/v2/networks/"+net+"/pools/"+encodeURIComponent(pa.a)+"/ohlcv/"+w.ag[0]+"?aggregate="+w.ag[1]+"&before_timestamp="+Math.ceil(w.t1)+"&limit="+n+"&currency=usd"+(pa.tok?"&token="+encodeURIComponent(pa.tok):"");
+    var go=function(){return fetch(u).then(function(r){if(!r.ok)throw new Error("GeckoTerminal "+r.status);return r.json()})};
+    return go().catch(function(){return new Promise(function(res){setTimeout(res,2500)}).then(go)}).then(function(j){
+      var L=((j&&j.data&&j.data.attributes&&j.data.attributes.ohlcv_list)||[]).filter(function(q){return q[0]>=w.t0-w.ag[2]&&isFinite(q[1])&&q[2]>0}).sort(function(a,b){return a[0]-b[0]});
+      CC[key]={pa:pa,candles:L,agName:w.ag[1]+(w.ag[0]==="hour"?"h":"m"),slot:w.ag[2],win:w,at:Date.now()};if(!ev.open&&L.length)tcSave(key,CC[key]);return CC[key]});
+  });
+}
+function tcDraw(x,ev,cc,box){
+  var W=box.clientWidth||360,H=box.clientHeight||300,pl=6,pr=62,pt=24,pb=20,cs=cc.candles,w=cc.win,t0=w.t0,t1=Math.max(w.t1,cs.length?cs[cs.length-1][0]+cc.slot:w.t1);
+  var o=ev.open?x:null,L=o?LIVE[o.pair]:null,live=L&&L.ok?L.px:null;
+  var vs=[];cs.forEach(function(q){vs.push(q[2],q[3])});vs.push(ev.entryP);ev.sells.forEach(function(s){vs.push(s.p)});if(live)vs.push(live);
+  var mn=Math.min.apply(null,vs),mx=Math.max.apply(null,vs),pad=(mx-mn)*.08||mx*.05;mn=Math.max(mn-pad,mn*.2);mx+=pad;
+  var stopIn=ev.stop&&ev.stop.p>=mn&&ev.stop.p<=mx;
+  var X=function(t){return pl+(t-t0)/(t1-t0)*(W-pl-pr)},Y=function(v){return pt+(1-(v-mn)/(mx-mn))*(H-pt-pb)};
+  var s='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" font-family="Inter,system-ui,sans-serif">';
+  for(var i=0;i<=4;i++){var v=mn+(mx-mn)*i/4,y=Y(v);s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="#fff" stroke-opacity=".06"/><text x="'+(W-pr+5)+'" y="'+(y+3.5).toFixed(1)+'" fill="#8d96aa" font-size="10">'+px(v)+'</text>'}
+  for(i=0;i<=3;i++){var t=t0+(t1-t0)*i/3;s+='<text x="'+X(t).toFixed(1)+'" y="'+(H-5)+'" fill="#8d96aa" font-size="10" text-anchor="'+(i===0?"start":i===3?"end":"middle")+'">'+hm(t*1000)+'</text>'}
+  var cw=Math.max(1.6,(W-pl-pr)*cc.slot/(t1-t0)*.7);
+  cs.forEach(function(q){var up=q[4]>=q[1],col=up?"#39ff88":"#ff3b6b",cx=X(q[0]+cc.slot/2),yo=Y(q[1]),yc=Y(q[4]);
+    s+='<line x1="'+cx.toFixed(1)+'" x2="'+cx.toFixed(1)+'" y1="'+Y(q[2]).toFixed(1)+'" y2="'+Y(q[3]).toFixed(1)+'" stroke="'+col+'" stroke-width="1"/><rect x="'+(cx-cw/2).toFixed(1)+'" y="'+Math.min(yo,yc).toFixed(1)+'" width="'+cw.toFixed(1)+'" height="'+Math.max(1,Math.abs(yc-yo)).toFixed(1)+'" fill="'+col+'" fill-opacity=".9"/>'});
+  var tag=function(y,txt,col,fg){var wd=txt.length*5.9+8;return '<rect x="'+(W-pr+1)+'" y="'+(y-8).toFixed(1)+'" width="'+Math.min(wd,pr-1)+'" height="16" rx="4" fill="'+col+'"/><text x="'+(W-pr+5)+'" y="'+(y+3.5).toFixed(1)+'" fill="'+(fg||"#05060a")+'" font-size="9.5" font-weight="800">'+txt+'</text>'};
+  var ey=Y(ev.entryP);
+  s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+ey.toFixed(1)+'" y2="'+ey.toFixed(1)+'" stroke="#39ff88" stroke-width="1.2" stroke-dasharray="5 4"/>'+tag(ey,"BUY","#39ff88");
+  if(ev.stop&&!stopIn){var low=ev.stop.p<mn;s+='<text x="'+(pl+4)+'" y="'+(low?H-pb-5:pt+12)+'" fill="#ff7d9a" font-size="10" font-weight="700">'+(low?'↓ ':'↑ ')+ev.stop.l+' · $'+px(ev.stop.p)+' (off chart)</text>'}
+  if(stopIn){var sy=Y(ev.stop.p);s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+sy.toFixed(1)+'" y2="'+sy.toFixed(1)+'" stroke="#ff3b6b" stroke-width="1" stroke-dasharray="2 4" stroke-opacity=".8"/><text x="'+(pl+4)+'" y="'+(sy-4).toFixed(1)+'" fill="#ff7d9a" font-size="10" font-weight="700">'+ev.stop.l+' · $'+px(ev.stop.p)+'</text>'}
+  if(live){var ly=Y(live),pc=(live/ev.entryP-1)*100;s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+ly.toFixed(1)+'" y2="'+ly.toFixed(1)+'" stroke="#fff" stroke-opacity=".7" stroke-width="1" stroke-dasharray="1 3"/>'+tag(Math.abs(ly-ey)<15?ey+(ly>=ey?16:-16):ly,"NOW","#ffffff")+'<circle cx="'+(W-pr-4)+'" cy="'+ly.toFixed(1)+'" r="4" fill="#fff" stroke="#05060a" stroke-width="1.5"/>'}
+  if(ev.entryT!=null){var ex=X(ev.entryT);s+='<line x1="'+ex.toFixed(1)+'" x2="'+ex.toFixed(1)+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#39ff88" stroke-opacity=".28" stroke-dasharray="2 4"/><path d="M'+ex.toFixed(1)+' '+(ey-1).toFixed(1)+' l-7 12 h14 z" fill="#39ff88" stroke="#05060a" stroke-width="1.4"/>'}
+  ev.sells.forEach(function(sl){var sx=X(sl.t),sy2=Y(sl.p),col=sl.partial?"#ff9f0a":"#ff3b6b";
+    s+='<line x1="'+sx.toFixed(1)+'" x2="'+sx.toFixed(1)+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="'+col+'" stroke-opacity=".3" stroke-dasharray="2 4"/><path d="M'+sx.toFixed(1)+' '+(sy2+1).toFixed(1)+' l-7 -12 h14 z" fill="'+col+'" stroke="#05060a" stroke-width="1.4"/>'});
+  s+='<g font-size="10.5" font-weight="700"><circle cx="'+(pl+6)+'" cy="11" r="4" fill="#39ff88"/><text x="'+(pl+14)+'" y="14.5" fill="#c9cfdc">Buy</text><circle cx="'+(pl+48)+'" cy="11" r="4" fill="#ff9f0a"/><text x="'+(pl+56)+'" y="14.5" fill="#c9cfdc">Half sell</text><circle cx="'+(pl+118)+'" cy="11" r="4" fill="#ff3b6b"/><text x="'+(pl+126)+'" y="14.5" fill="#c9cfdc">Sell</text><text x="'+(W-pr)+'" y="14.5" fill="#8d96aa" text-anchor="end" font-weight="600">'+cc.agName+' candles</text></g></svg>';
+  box.innerHTML=s;
+}
+function tcPaint(x,build){
+  var box=$("#shchart");if(!box)return;var ev=tcEvents(SH.kind,x),key=x.chain+"/"+(ev.open?x.pair:x.link.replace(/\/$/,"").split("/").pop()),c=CC[key],seq=SH.seq;if(!c&&!ev.open){c=tcLoad(key);if(c){c.at=Date.now();CC[key]=c}}
+  var note=function(m){return '<div class="sh-load" style="padding:0 22px;text-align:center;line-height:1.45">'+m+'</div>'};
+  var show=function(cc){
+    if(!SH.open||SH.mode!=="tc"||seq!==SH.seq)return;
+    if(!cc.candles.length){box.innerHTML=note("No candles are available for this pair on GeckoTerminal for the trade window, so nothing is drawn. Use the DexScreener tab or the link above.");return}
+$("#shnote").textContent="Real "+cc.agName+" candles from GeckoTerminal (gaps = no trades). Paper entry/exit prices come from DexScreener at scan time, so they can sit slightly off the candles."+(ev.open?" Updates about every minute while open.":"");
+    var wrap=document.createElement("div");wrap.className="tc";box.innerHTML="";box.appendChild(wrap);tcDraw(x,ev,cc,wrap);
+  };
+  if(c&&c.candles&&(build||Date.now()-c.at<60000)){show(c);if(!(ev.open&&Date.now()-c.at>=60000))return}
+  else if(build)box.innerHTML='<div class="sh-load">loading candles…</div>';
+  if(c&&Date.now()-c.at<60000&&c.candles)return;
+  if(PEND[key]&&Date.now()-PEND[key]<15000)return;PEND[key]=Date.now();
+  tcFetch(x,ev,seq).then(function(cc){delete PEND[key];show(cc)}).catch(function(e){delete PEND[key];if(!SH.open||SH.mode!=="tc"||seq!==SH.seq)return;if(c&&c.candles){show(c);return}
+    box.innerHTML=note("Candles are unavailable right now ("+esc(e.message||"network error")+"). Nothing is drawn rather than guessing. Try again, or use the DexScreener tab.");$("#shnote").textContent=""});
+}
 function paintSheet(build){
   var box=$("#sheet");if(!box)return;
   $("#shtabs").querySelectorAll("button").forEach(function(b){b.style.display=""});
@@ -966,10 +1043,11 @@ function paintSheet(build){
   if(build){
     $("#shtabs").querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-m")===SH.mode)});
     var ch=$("#shchart");
-    if(SH.mode==="ds"){
+    if(SH.mode==="tc"){clearTimeout(SH.timer);tcPaint(x,true);$("#shnote").textContent=""}
+    else if(SH.mode==="ds"){
       ch.innerHTML='<div class="sh-load" id="shload">loading DexScreener chart…</div><iframe id="shframe" title="DexScreener chart" referrerpolicy="no-referrer" allow="clipboard-write" src="https://dexscreener.com/'+encodeURIComponent(x.chain)+'/'+encodeURIComponent(o?o.pair:(x.link.replace(/\/$/,"").split("/").pop()))+'?embed=1&theme=dark&trades=0&info=0"></iframe>';
       SH.loaded=false;var fr=$("#shframe");fr.addEventListener("load",function(){SH.loaded=true;var l=$("#shload");if(l)l.remove()});
-      clearTimeout(SH.timer);SH.timer=setTimeout(function(){if(SH.open&&SH.mode==="ds"&&!SH.loaded){SH.mode="line";SH.auto=true;paintSheet(true)}},9000);
+      clearTimeout(SH.timer);SH.timer=setTimeout(function(){if(SH.open&&SH.mode==="ds"&&!SH.loaded){SH.mode="line";SH.auto=true;SH.seq++;paintSheet(true)}},9000);
     }else{
       clearTimeout(SH.timer);
       ch.innerHTML=lineChart(seriesFor(SH.kind,x),x.entry,SH.kind);
@@ -977,21 +1055,23 @@ function paintSheet(build){
     }
     if(SH.mode==="ds")$("#shnote").textContent="";
   }else if(SH.mode==="line"){$("#shchart").innerHTML=lineChart(seriesFor(SH.kind,x),x.entry,SH.kind)}
+  else if(SH.mode==="tc")tcPaint(x,false);
 }
 function openSheet(kind,key){
-  SH.open=true;SH.kind=kind;SH.key=key;SH.mode="ds";SH.auto=false;
+  SH.open=true;SH.kind=kind;SH.key=key;SH.mode="tc";SH.auto=false;SH.seq=(SH.seq||0)+1;
   var s=$("#sheet");s.style.transform="";s.classList.remove("drag");s.classList.add("open");s.setAttribute("aria-hidden","false");document.body.classList.add("shopen");
   paintSheet(true);
 }
 function closeSheet(){
-  if(!SH.open)return;SH.open=false;clearTimeout(SH.timer);
+  if(!SH.open)return;SH.open=false;SH.seq++;clearTimeout(SH.timer);
   var s=$("#sheet");s.style.transform="";s.classList.remove("open","drag");s.setAttribute("aria-hidden","true");document.body.classList.remove("shopen");
   setTimeout(function(){if(!SH.open)$("#shchart").innerHTML=""},380);   /* unload the iframe */
 }
 function initSheet(){
+  var rz;window.addEventListener("resize",function(){clearTimeout(rz);rz=setTimeout(function(){if(SH.open&&SH.mode==="tc")paintSheet(false)},150)});
   $("#shx").addEventListener("click",closeSheet);
   document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSheet()});
-  $("#shtabs").addEventListener("click",function(e){var b=e.target.closest("button[data-m]");if(!b)return;SH.mode=b.getAttribute("data-m");SH.auto=false;paintSheet(true)});
+  $("#shtabs").addEventListener("click",function(e){var b=e.target.closest("button[data-m]");if(!b)return;SH.mode=b.getAttribute("data-m");SH.auto=false;SH.seq++;paintSheet(true)});
   document.addEventListener("click",function(e){
     if(e.target.closest("a"))return;
     var tr=e.target.closest("#openp .tr, #histp .tr");if(!tr)return;
