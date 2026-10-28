@@ -33,7 +33,7 @@ body.light{
   --pill:#0b0d12; --pill-text:#fff; --track:#e3e6ee; --glow:0.14;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,"SF Pro Rounded","SF Pro Display",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+html,body{overscroll-behavior-y:contain;margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,"SF Pro Rounded","SF Pro Display",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior-y:contain}
 body{min-height:100vh;display:flex;justify-content:center}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;
   background:radial-gradient(520px 320px at 88% -40px,rgba(57,255,136,.09),transparent 70%),radial-gradient(460px 360px at -12% 55%,rgba(255,79,216,.07),transparent 70%),radial-gradient(420px 300px at 110% 92%,rgba(255,59,107,.06),transparent 70%)}
@@ -653,6 +653,11 @@ body:not(.light) :is(.panel,.card,.livebar,.spark,.sum div,.rules,.goal,.menu,.s
 #pg-overview .rules{border-radius:999px;padding:9px 16px}
 .still .tk{animation:none}
 
+/* v20: pull to refresh */
+#ptr{position:fixed;left:50%;top:0;z-index:60;transform:translate(-50%,-60px);display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:var(--bg);border:1px solid rgba(127,127,127,.3);box-shadow:0 4px 16px rgba(0,0,0,.35);font-size:13px;color:var(--text);pointer-events:none;opacity:0;transition:transform .2s,opacity .2s}
+#ptr.drag{transition:none}#ptr i{display:inline-block;width:16px;height:16px;text-align:center;line-height:16px;transition:transform .2s;font-style:normal}
+#ptr.ready i{transform:rotate(180deg)}#ptr.busy i{border:2px solid currentColor;border-top-color:transparent;border-radius:50%;width:12px;height:12px;animation:ptrspin .8s linear infinite}
+@keyframes ptrspin{to{transform:rotate(360deg)}}
 /* v19: full screen, no width limits */
 .app,.main,.sh-in{max-width:none!important}
 .main{margin:0;padding-left:calc(env(safe-area-inset-left,0px) + 8px);padding-right:calc(env(safe-area-inset-right,0px) + 8px)}
@@ -1305,17 +1310,40 @@ else{
   document.addEventListener("visibilitychange",function(){if(!document.hidden){load();fetchLive()}});
   if("serviceWorker" in navigator&&location.protocol!=="file:"){
     /* v15: robust updates. The page knows its own version; it asks the server (no-store) for sw.js, and if the version differs it shows an "Updated, tap to reload" bar. */
-    var APP_V="paper-desk-v19",updBar=null,hadCtl=!!navigator.serviceWorker.controller,regP=navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(function(){});
+    var APP_V="paper-desk-v20",updBar=null,hadCtl=!!navigator.serviceWorker.controller,regP=navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(function(){});
     var showUpd=function(){if(updBar)return;updBar=document.createElement("button");updBar.id="upd";updBar.textContent="Updated · tap to reload";
       updBar.onclick=function(){try{caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==APP_V}).map(function(k){return caches.delete(k)}))}).then(function(){location.reload()},function(){location.reload()})}catch(e){location.reload()}};document.body.appendChild(updBar)};
     var checkUpd=function(){regP.then(function(r){if(r&&r.update)r.update().catch(function(){})});
       fetch("sw.js?v="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=/CACHE\s*=\s*"([^"]+)"/.exec(t);if(m&&m[1]!==APP_V)showUpd()}).catch(function(){})};
     navigator.serviceWorker.addEventListener("controllerchange",function(){if(hadCtl&&!window.__reloading){window.__reloading=1;if(SH.open)showUpd();else location.reload()}});
     document.addEventListener("visibilitychange",function(){if(!document.hidden)checkUpd()});window.addEventListener("pageshow",function(e){if(e.persisted)checkUpd()});
-    setTimeout(checkUpd,4000);setInterval(checkUpd,5*60*1000);
+    window.__ptrCheck=checkUpd;setTimeout(checkUpd,4000);setInterval(checkUpd,5*60*1000);
   }
 }
 setInterval(fetchLive,12000);
+/* v20: pull to refresh (touch, only at top of current page; never in coin chart sheet or open menu) */
+(function(){
+  var TH=70,el=null,y0=null,x0=0,dist=0,busy=false,sc=null;
+  function ui(){if(el)return el;el=document.createElement("div");el.id="ptr";el.innerHTML='<i>↓</i><span>Pull to refresh</span>';document.body.appendChild(el);return el}
+  function set(d,cls,txt){var e=ui();e.className=cls||"";e.querySelector("span").textContent=txt;
+    var o=Math.min(1,d/TH);e.style.opacity=d>0||busy?1:0;e.style.transform="translate(-50%,"+(Math.min(d,TH*1.4)*0.8-40+(busy?20:0))+"px)"}
+  function hide(){if(!el)return;el.className="";el.style.opacity=0;el.style.transform="translate(-50%,-60px)"}
+  function scroller(){return document.querySelector(".pg.on")}
+  function blocked(t){var a=document.getElementById("app");return (typeof SH!=="undefined"&&SH.open)||(a&&a.classList.contains("nav"))||(t&&t.closest&&t.closest("#sheet,#shchart,#nav,.tl,.feed,.lgb,iframe,input,textarea,select"))}
+  document.addEventListener("touchstart",function(e){y0=null;if(busy||e.touches.length!==1||blocked(e.target))return;sc=scroller();
+    if((sc&&sc.scrollTop>0)||window.scrollY>0)return;y0=e.touches[0].clientY;x0=e.touches[0].clientX;dist=0},{passive:true});
+  document.addEventListener("touchmove",function(e){if(y0==null)return;var t=e.touches[0],dy=t.clientY-y0,dx=Math.abs(t.clientX-x0);
+    if((sc&&sc.scrollTop>0)||dy<=0||(dist===0&&dx>dy)){if(dist===0){y0=null;hide()}return}
+    dist=dy*0.6;if(e.cancelable)e.preventDefault();var r=dist>=TH;ui().classList.add("drag");set(dist,"drag"+(r?" ready":""),r?"Release to refresh":"Pull to refresh")},{passive:false});
+  function end(){if(y0==null)return;y0=null;if(dist>=TH)go();else hide();dist=0}
+  document.addEventListener("touchend",end,{passive:true});document.addEventListener("touchcancel",function(){y0=null;dist=0;hide()},{passive:true});
+  function go(){busy=true;set(TH,"busy","Refreshing…");try{if(window.__ptrCheck)window.__ptrCheck()}catch(e){}
+    var done=function(){busy=false;hide()};
+    fetch("data.json?ptr="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})
+      .then(function(d){lastSig=null;show(d);try{fetchLive()}catch(e){}setTimeout(done,350)})
+      .catch(function(){set(TH,"","Refresh failed");setTimeout(done,1200)})}
+  window.__ptrDemo=function(d){busy=false;set(d,"drag"+(d>=TH?" ready":""),d>=TH?"Release to refresh":"Pull to refresh")};
+})();
 })();
 </script>
 </body>
