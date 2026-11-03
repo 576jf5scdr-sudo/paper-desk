@@ -679,8 +679,8 @@ body:not(.light) :is(.panel,.card,.livebar,.spark,.sum div,.rules,.goal,.menu,.s
 var $=function(s){return document.querySelector(s)};
 var qs=new URLSearchParams(location.search);var STILL=qs.get('still')==='1';if(STILL)document.documentElement.classList.add('still');
 if(qs.get("theme")==="light")document.body.classList.add("light");
-var COLORS={Sniper:"#ff9f0a",Momentum:"#7ed957","Dip Hunter":"#ff5fa2",Vetter:"#2f7bff",Spy:"#a65cf0","Risk Manager":"#29b6c9"};
-var RNAME={SNIPER:"Sniper",MOMENTUM:"Momentum",DIP_HUNTER:"Dip Hunter"},CAP_DEFAULT=5;
+var COLORS={Sniper:"#ff9f0a",Momentum:"#7ed957","Dip Hunter":"#ff5fa2",Vetter:"#2f7bff",Spy:"#a65cf0","Risk Manager":"#29b6c9",Copy:"#e8c547"};
+var RNAME={SNIPER:"Sniper",MOMENTUM:"Momentum",DIP_HUNTER:"Dip Hunter",COPY:"Copy"},CAP_DEFAULT=5;
 function rname(p){return RNAME[p&&p.role]||"Sniper"}
 var MIL=[1.25,1.5,2,3,4,5];
 var ICON={
