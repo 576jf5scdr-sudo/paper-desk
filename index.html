@@ -30,7 +30,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:30;background:rgba(0,0,0,.86)
 .sh{display:flex;justify-content:space-between;align-items:baseline;margin:20px 0 10px}.sh h2{font-size:20px;margin:0;font-weight:700}.sh span{font-size:14px;font-weight:600}
 .hs{display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:0 16px 4px;scrollbar-width:none}.hs::-webkit-scrollbar{display:none}
 .ag{flex:0 0 150px;background:var(--card);border-radius:18px;padding:14px}
-.ag .n{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px}.ag .v{font-size:24px;font-weight:800;margin:10px 0 2px}.ag .d{font-size:12px;color:var(--g)}
+.ag .n{font-size:14px;font-weight:700;display:flex;flex-direction:column;align-items:flex-start;gap:8px}.ag .v{font-size:24px;font-weight:800;margin:10px 0 2px}.ag .d{font-size:12px;color:var(--g)}
 .list{background:var(--card);border-radius:18px;overflow:hidden}
 .row{display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid #2c2c2e;align-items:center}.row:last-child{border:0}
 .ic{width:38px;height:38px;border-radius:50%;flex:0 0 38px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800}
@@ -63,6 +63,10 @@ body.hastbar{padding-bottom:calc(env(safe-area-inset-bottom) + 130px)}
 .bub.me{margin-left:auto;background:var(--b);border-bottom-right-radius:6px}.bub.bot{background:#2C2C2E;border-bottom-left-radius:6px}
 .bt{font-size:11px;color:#636366;margin:0 4px}.bt.me{text-align:right}
 .ctx{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:14px;padding:10px 14px;font-size:13px;margin:10px 0}
+.av{width:32px;height:32px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 32px}
+.tk{position:relative;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;color:#000;overflow:hidden}.tk img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.row .tkw{position:relative}.row .badge{position:absolute;right:-3px;bottom:-3px;width:18px;height:18px;border-radius:50%;border:2px solid #1C1C1E;display:flex;align-items:center;justify-content:center}
+.dhead{display:flex;align-items:center;gap:12px}
 .empty{padding:16px;color:var(--g);font-size:14px}
 </style></head><body class="hastbar">
 <header><div class="hrow"><div class="title" id="ttl">Paper Desk</div><div id="live" class="pill"><i class="dot"></i><span>Live</span></div></div><div class="sub" id="subh">loading…</div></header>
@@ -82,11 +86,11 @@ body.hastbar{padding-bottom:calc(env(safe-area-inset-bottom) + 130px)}
 
 <div id="det"></div><form class="tbar" id="tbar"><input id="tin" placeholder="Give Grok Bot a task..." autocomplete="off" enterkeyhint="send"><button type="submit">↑</button></form>
 <nav id="nav">
- <button class="on" data-p="home"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 11h3v9h5v-6h4v6h5v-9h3z"/></svg>Home</button>
- <button data-p="agents"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="8" r="3.5"/><circle cx="16.5" cy="9" r="3"/><path d="M1.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6zM14 20c.2-2-.4-3.7-1.6-5 .9-.6 2.4-1 4.1-1 3 0 5.5 2 5.5 6z"/></svg>Agents</button>
- <button data-p="act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Activity</button>
- <button data-p="task"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4v-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>Grok Bot</button>
- <button data-p="acct"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.5"/><path d="M3 21c0-4.4 4-7 9-7s9 2.6 9 7z"/></svg>Account</button>
+ <button class="on" data-p="home"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 11h3v9h5v-6h4v6h5v-9h3z"/></svg> Home</button>
+ <button data-p="task"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="7" width="16" height="12" rx="4"/><rect x="11" y="2.5" width="2" height="4"/><circle cx="12" cy="2.5" r="1.6"/><circle cx="9" cy="13" r="1.7" fill="#000"/><circle cx="15" cy="13" r="1.7" fill="#000"/><rect x="1.5" y="11" width="2" height="4" rx="1"/><rect x="20.5" y="11" width="2" height="4" rx="1"/></svg> Grok Bot</button>
+ <button data-p="act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4" cy="6" r="1.3" fill="currentColor"/><circle cx="4" cy="12" r="1.3" fill="currentColor"/><circle cx="4" cy="18" r="1.3" fill="currentColor"/></svg> Activity</button>
+ <button data-p="acct"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.5"/><path d="M3 21c0-4.4 4-7 9-7s9 2.6 9 7z"/></svg> Account</button>
+ <button data-p="agents" style="display:none"></button>
 </nav>
 <script>
 var PAGE="home",D=null,RANGE="live",TZ="Europe/Athens",RN={SNIPER:"Sniper",MOMENTUM:"Momentum",DIP_HUNTER:"Dip Hunter",COPY:"Copier"},STOP={SNIPER:25,MOMENTUM:20,DIP_HUNTER:15,COPY:25};
@@ -109,6 +113,11 @@ function hdr(){if(!D)return;var live=Date.now()-ts(D.last_scan)<20*60e3,fw=(D.co
 function msgs(){try{return JSON.parse(localStorage.pdTasks||"[]")}catch(e){return[]}}
 function chat(){var m=msgs();$("chat").innerHTML=m.length?m.map(function(x){return'<div class="bub me">'+esc(x.text)+'</div><div class="bt me">'+at(x.t)+'</div><div class="bub bot">Saved. I\'ll apply this on the desk.</div>'}).join(""):'<div class="bub bot">Hi G. Type a task for the desk below. It is saved here so you can send it to me in chat.</div>';setTimeout(function(){scrollTo(0,document.body.scrollHeight)},50)}
 $("tbar").onsubmit=function(e){e.preventDefault();var v=$("tin").value.trim();if(!v)return;var m=msgs();m.push({text:v,t:Date.now()});localStorage.pdTasks=JSON.stringify(m.slice(-50));$("tin").value="";go("task")};
+var SV={eye:'<path d="M12 5C6 5 2 12 2 12s4 7 10 7 10-7 10-7-4-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>',copy:'<path d="M8 3h11a2 2 0 0 1 2 2v11h-2V5H8z"/><rect x="3" y="7" width="14" height="14" rx="2"/>',target:'<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 3a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>',shield:'<path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/>',warn:'<path d="M12 2 1 21h22z"/><path d="M12 9v5" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.2" fill="#000"/>',bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',check:'<circle cx="12" cy="12" r="10"/><path d="m7 12.5 3.2 3.2L17 9" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round"/>',up:'<path d="M12 4 5 11h4.5v9h5v-9H19z"/>',dn:'<path d="M12 20l7-7h-4.5V4h-5v9H5z"/>'};
+function ico(n,col,sz){return'<svg viewBox="0 0 24 24" width="'+(sz||16)+'" height="'+(sz||16)+'" fill="'+(col||"currentColor")+'" style="vertical-align:-3px;flex:0 0 auto">'+SV[n]+'</svg>'}
+function av(n,col){return'<span class="av" style="background:'+col+'26;color:'+col+'">'+ico(n,col,18)+'</span>'}
+function tokImg(addr,coin,sz){var c=["#FF9F0A","#007AFF","#34C759","#AF52DE","#FF375F"][(coin||"?").charCodeAt(0)%5],l=esc((coin||"?").slice(0,1).toUpperCase());
+ return'<span class="tk" style="width:'+sz+'px;height:'+sz+'px;flex:0 0 '+sz+'px;background:'+c+';font-size:'+Math.round(sz*.42)+'px">'+l+(addr?'<img src="https://dd.dexscreener.com/ds-data/tokens/solana/'+esc(addr)+'.png?size=lg" onerror="this.remove()" alt="">':"")+'</span>'}
 /* odometer */
 var lastBal=null;
 function odo(v){var s=money(v),el=$("bal");
@@ -147,14 +156,14 @@ function nextRun(){var n=ts(D.last_scan)+10*60e3-Date.now();if(n<=0)return"due n
 function ago(t){var m=Math.round((Date.now()-t)/60e3);return m<1?"just now":m<60?m+"m ago":m<1440?Math.round(m/60)+"h ago":Math.round(m/1440)+"d ago"}
 function lagTxt(){var l=D.open_positions.filter(function(p){return p.role=="COPY"&&p.leader_ts}).map(function(p){return ts(p.opened)/1e3-p.leader_ts});if(!l.length)return"";var a=l.reduce(function(x,y){return x+y},0)/l.length;return a<90?Math.round(a)+"s behind":Math.round(a/60)+"m behind"}
 function ring(){var left=Math.max(0,ts(D.last_scan)+10*60e3-Date.now()),fr=left/600e3,synced=Date.now()-ts(D.last_scan)<11*60e3,C=2*Math.PI*14;
- return'<div class="ring"><svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="14" fill="none" stroke="#2C2C2E" stroke-width="3"/><circle cx="17" cy="17" r="14" fill="none" stroke="'+(synced?"#34C759":"#8E8E93")+'" stroke-width="3" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+(C*(1-fr))+'"/></svg><b class="'+(synced?"up":"mut")+'">'+(synced&&left>540e3?"✓":Math.ceil(left/60e3)+"m")+'</b></div>'}
+ return'<div class="ring"><svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="14" fill="none" stroke="#2C2C2E" stroke-width="3"/><circle cx="17" cy="17" r="14" fill="none" stroke="'+(synced?"#34C759":"#8E8E93")+'" stroke-width="3" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+(C*(1-fr))+'"/></svg><b class="'+(synced?"up":"mut")+'">'+(synced&&left>540e3?ico("check","#34C759",18):Math.ceil(left/60e3)+"m")+'</b></div>'}
 function agentList(){var d=D,fw=(d.copy&&d.copy.followed)||[],cs=copyStats(),sn=d.roles.SNIPER||{},lastFill=d.feed.find(function(f){return f.kind=="buy"||f.kind=="sell"});
- return[["Watcher / Spy","👁",fw.length,"wallets followed"+(d.copy.demoted.length?" · "+d.copy.demoted.length+" demoted":"")],
- ["Copier","⧉",cs.open+cs.closed,"COPY trades · "+(lagTxt()||"next run <span class=nr>"+nextRun()+"</span>"),"ring"],
- ["Sniper","◎",sn.entries||0,"buys · "+(sn.open||0)+" open"],
- ["Vetter","✓",(d.last_rejects||0),"rejects last scan · "+d.rejected.toLocaleString()+" total"],
- ["Risk Manager","⚠",d.loss_streak,"losses in a row · stop −25%"],
- ["Executor","⚡",lastFill?esc(lastFill.coin):"—",lastFill?(lastFill.kind=="buy"?"bought":"sold")+" · filled "+ago(feedTs(lastFill))+" · paper · "+d.open_count+"/"+d.open_cap+" open":"no fills yet"]]}
+ return[["Watcher / Spy",av("eye","#007AFF"),fw.length,"wallets followed"+(d.copy.demoted.length?" · "+d.copy.demoted.length+" demoted":"")],
+ ["Copier",av("copy","#34C759"),cs.open+cs.closed,"COPY trades · "+(lagTxt()||"next run <span class=nr>"+nextRun()+"</span>"),"ring"],
+ ["Sniper",av("target","#FF9F0A"),sn.entries||0,"buys · "+(sn.open||0)+" open"],
+ ["Vetter",av("shield","#34C759"),(d.last_rejects||0),"rejects last scan · "+d.rejected.toLocaleString()+" total"],
+ ["Risk Manager",av("warn","#FF9F0A"),d.loss_streak,"losses in a row · stop −25%"],
+ ["Executor",av("bolt","#AF52DE"),lastFill?esc(lastFill.coin):"—",lastFill?(lastFill.kind=="buy"?"bought":"sold")+" · filled "+ago(feedTs(lastFill))+" · paper · "+d.open_count+"/"+d.open_cap+" open":"no fills yet"]]}
 function agents(){var L=agentList(),live=Date.now()-ts(D.last_scan)<20*60e3;
  $("nrun").textContent=$("nrun2").textContent=(live?L.length:0)+" running";
  $("agents").innerHTML=L.map(function(a){return'<div class="ag"><div class="top"><div class="n">'+a[1]+" "+a[0]+'</div>'+(a[4]?'<span id="rg">'+ring()+'</span>':"")+'</div><div class="v">'+a[2]+'</div><div class="d">'+a[3]+'</div></div>'}).join("");
@@ -167,8 +176,8 @@ function acts(){var d=D,out=[];
  d.closed_trades.forEach(function(c){out.push({t:ts(c.opened_ts),kind:"buy",coin:c.coin,role:c.role,val:c.size,link:c.link,ct:c});out.push({t:ts(c.ts),kind:"sell",coin:c.coin,role:c.role,val:c.size*(c.fraction||1)+(c.pnl||0),pnl:c.pnl,pct:c.pct,link:c.link,ct:c})});
  var seen={};out=out.filter(function(a){var k=a.kind+a.link+a.t;if(seen[k])return false;seen[k]=1;return !isNaN(a.t)});
  return out.sort(function(a,b){return b.t-a.t})}
-function row(a,i){var s=a.kind=="sell",ic=s?(a.pnl>=0?"s":"l"):"b";
- return'<div class="row" onclick="openDet('+i+')"><div class="ic '+ic+'">'+(s?"↑":"↓")+'</div><div class="rm"><div class="a"><span>'+(s?"Sold ":"Bought ")+esc(a.coin)+'</span><span class="'+(s?(a.pnl>=0?"up":"dn"):"")+'">'+money(a.val)+'</span></div>'+
+function row(a,i){var s=a.kind=="sell",bc=s?(a.pnl>=0?"#34C759":"#FF3B30"):"#007AFF",addr=(a.pos&&a.pos.address)||(a.ct&&a.ct.address);
+ return'<div class="row" onclick="openDet('+i+')"><div class="tkw">'+tokImg(addr,a.coin,40)+'<span class="badge" style="background:'+bc+'">'+ico(s?"up":"dn","#fff",11)+'</span></div><div class="rm"><div class="a"><span>'+(s?"Sold ":"Bought ")+esc(a.coin)+'</span><span class="'+(s?(a.pnl>=0?"up":"dn"):"")+'">'+money(a.val)+'</span></div>'+
  '<div class="c"><span>'+(RN[a.role]||a.role)+" · "+at(a.t)+'</span><span class="'+(a.pct==null?"":a.pct>=0?"up":"dn")+'">'+(a.pct==null?"":(a.pct>=0?"+":"")+a.pct.toFixed(1)+"%")+'</span></div><div class="e">on Solana · paper</div></div></div>'}
 var ACTS=[];
 function activity(){ACTS=acts();$("act5").innerHTML=ACTS.slice(0,5).map(row).join("")||'<div class="empty">No trades yet</div>';$("actAll").innerHTML=ACTS.slice(0,150).map(row).join("")}
@@ -181,16 +190,17 @@ function acct(){var d=D,c=d.closed_trades.filter(function(x){return x.final!==fa
  '<div class="mut" style="font-size:12px;text-align:center;margin:10px 0 20px">Practice money only · updated '+esc(d.generated)+' Athens</div>'}
 /* detail */
 function openDet(i){var a=ACTS[i],p=a.pos,c=a.ct,link=a.link,pair=link.split("/").pop(),entry=p?p.entry:c.entry,exit=c?c.exit:null,role=a.role;
- $("det").innerHTML='<button class="back" onclick="$(\'det\').classList.remove(\'on\')">‹ Back</button><div class="cname">'+esc(a.coin)+'</div><div class="mut" id="dsub">Solana · loading…</div>'+
- '<div class="big" id="dval">'+(p?"…":money(c.size*(c.fraction||1)+(c.pnl||0)))+'</div><div class="chg" id="dchg">'+(c?'<span class="'+(c.pct>=0?"up":"dn")+'">'+(c.pct>=0?"↑ ":"↓ ")+Math.abs(c.pct).toFixed(1)+'% since desk bought (closed)</span>':"")+'</div>'+
- ''+(function(){var w=p&&p.leader||(c&&(/leader (\w{6})/.exec(c.reason||"")||[])[1]);return role=="COPY"?'<div class="ctx"><span style="color:#007AFF">●</span> their trades · <b>'+esc(w&&w.length>8?sh(w):(w||"leader"))+'</b> wallet on Solana</div>':""})()+'<canvas id="cv"></canvas><a class="btn" href="'+esc(link)+'" target="_blank" rel="noopener">Open on DEX</a>'+
- '<div class="grid"><div class="card"><div class="l">Market cap</div><div class="v" id="dmc">—</div></div><div class="card"><div class="l">Volume 24h</div><div class="v" id="dvol">—</div></div></div>'+
+ $("det").innerHTML='<button class="back" onclick="$(\'det\').classList.remove(\'on\')">‹ Back</button><div class="dhead">'+tokImg((p&&p.address)||(c&&c.address),a.coin,52)+'<div><div class="cname">'+esc(a.coin)+'</div><div class="mut" id="dsub">Solana · loading…</div></div></div>'+
+ '<div class="big" id="dval">'+(p?"…":money(c.size*(c.fraction||1)+(c.pnl||0)))+'</div><div class="chg" id="dchg">'+(c?'<span class="'+(c.pct>=0?"up":"dn")+'">'+ico(c.pct>=0?"up":"dn",null,15)+" "+Math.abs(c.pct).toFixed(1)+'% since desk '+(role=="COPY"?"copied":"bought")+' · closed</span>':"")+'</div>'+
+ ''+(function(){var w=p&&p.leader||(c&&(/leader (\w{6})/.exec(c.reason||"")||[])[1]);return role=="COPY"?'<div class="ctx">'+av("eye","#007AFF")+'<div><b>their trades</b><div class="mut">'+esc(w&&w.length>8?sh(w):(w||"leader"))+' wallet on Solana</div></div></div>':'<div class="ctx">'+av(role=="SNIPER"?"target":"bolt","#FF9F0A")+'<div><b>desk trade</b><div class="mut">found by '+(RN[role]||role)+' on Solana · paper</div></div></div>'})()+'<canvas id="cv"></canvas><a class="btn" href="'+esc(link)+'" target="_blank" rel="noopener">Open on DEX</a>'+
+ '<div class="grid"><div class="card"><div class="l">Market cap</div><div class="v" id="dmc">—</div></div><div class="card"><div class="l">Volume 10m <span style="font-size:11px">(1h avg)</span></div><div class="v" id="dvol">—</div></div></div>'+
  '<div class="card"><div class="kv"><span>Position</span><b>'+money(p?p.size:c.size)+' · found by '+(RN[role]||role)+'</b></div><div class="kv"><span>Entry</span><b>'+px(entry)+'</b></div>'+(exit?'<div class="kv"><span>Exit</span><b>'+px(exit)+'</b></div><div class="kv"><span>P&amp;L</span><b class="'+(c.pnl>=0?"up":"dn")+'">'+money(c.pnl)+'</b></div><div class="kv"><span>Reason</span><b style="font-size:13px;text-align:right">'+esc(c.reason)+'</b></div>':'<div class="kv"><span>Value</span><b id="dv2">…</b></div><div class="kv"><span>P&amp;L</span><b id="dpl">…</b></div>')+'</div>'+
- '<div class="risk">⚠ stop −'+(STOP[role]||25)+'% · take profit '+(role=="COPY"?"10x or when leader sells":role=="DIP_HUNTER"?"+20%":"half at +100%, rest by +200% / trail")+'</div>';
+ '<div class="risk">'+ico("warn","#FF9F0A",16)+' stop −'+(STOP[role]||25)+'% · take profit '+(role=="COPY"?"10x or when leader sells":role=="DIP_HUNTER"?"+20%":"half at +100%, rest by +200% / trail")+'</div>';
  $("det").classList.add("on");$("det").scrollTop=0;
  fetch("https://api.dexscreener.com/latest/dex/pairs/solana/"+pair).then(function(r){return r.json()}).then(function(j){var q=(j.pairs||[])[0];if(!q){CH(pair);return}CH(q.pairAddress||pair);
-  $("dsub").textContent="Solana · liq "+kfmt(q.liquidity&&q.liquidity.usd)+" / mcap "+kfmt(q.marketCap||q.fdv);$("dmc").textContent=kfmt(q.marketCap||q.fdv);$("dvol").textContent=kfmt(q.volume&&q.volume.h24);
-  if(p){var cur=+q.priceUsd,g=cur/entry-1,val=p.size*(p.remaining||1)*(1+g);$("dval").textContent=money(val);$("dchg").innerHTML='<span class="'+(g>=0?"up":"dn")+'">'+(g>=0?"↑ ":"↓ ")+Math.abs(g*100).toFixed(1)+'% since desk bought</span>';$("dv2").textContent=money(val);$("dpl").className=g>=0?"up":"dn";$("dpl").textContent=money(val-p.size*(p.remaining||1))}}).catch(function(){CH(pair)});
+  $("dsub").textContent="Solana · "+kfmt(q.marketCap||q.fdv)+" mcap";if(q.info&&q.info.imageUrl){var im=document.querySelector(".dhead .tk img");if(im)im.src=q.info.imageUrl;else document.querySelector(".dhead .tk").insertAdjacentHTML("beforeend",'<img src="'+esc(q.info.imageUrl)+'" alt="">')}
+  var v5=q.volume&&q.volume.m5,v1=q.volume&&q.volume.h1;$("dvol").textContent=kfmt(v1!=null?v1/6:v5);$("dmc").textContent=kfmt(q.marketCap||q.fdv);
+  if(p){var cur=+q.priceUsd,g=cur/entry-1,val=p.size*(p.remaining||1)*(1+g);$("dval").textContent=money(val);$("dchg").innerHTML='<span class="'+(g>=0?"up":"dn")+'">'+ico(g>=0?"up":"dn",null,15)+" "+Math.abs(g*100).toFixed(1)+'% since desk '+(role=="COPY"?"copied":"bought")+'</span>';$("dv2").textContent=money(val);$("dpl").className=g>=0?"up":"dn";$("dpl").textContent=money(val-p.size*(p.remaining||1))}}).catch(function(){CH(pair)});
  function CH(pa){candles(pa,entry,exit,ts(p?p.opened:c.opened_ts),c?ts(c.ts):null,(p&&p.pxs)||(D.series&&D.series[link]),p&&p.leader_ts?p.leader_ts*1e3:null)}}
 function candles(pair,entry,exit,t0,t1,fallback,lt){var cv=$("cv"),W=cv.clientWidth,H=260,r=devicePixelRatio||1;cv.width=W*r;cv.height=H*r;var x=cv.getContext("2d");x.scale(r,r);
  var end=Math.floor((t1||Date.now())/1000)+3600;
